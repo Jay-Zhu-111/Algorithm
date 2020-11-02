@@ -10,18 +10,18 @@ import java.util.Stack;
 
 public class jzTest {
 
-    private final Jz jz = new Jz();
+    private final Jz main = new Jz();
 
 
     @Test
     public void findDup() {
-        System.out.println(jz.findRepeatNumber(new int[]{1, 1, 2, 1, 4,5,6,7,8,9}));
+        System.out.println(main.findRepeatNumber(new int[]{1, 1, 2, 1, 4,5,6,7,8,9}));
     }
 
     @Test
     public void sort() {
         int[] array = new int[] {8, 5, 3 ,4 ,9 ,10, 23};
-        jz.quickSort(array);
+        main.quickSort(array);
         System.out.println(Arrays.toString(array));
     }
 
@@ -45,7 +45,7 @@ public class jzTest {
         matrix[2] = new int[]{3, 6, 9, 16, 22};
         matrix[3] = new int[]{10, 13, 14, 17, 24};
         matrix[4] = new int[]{18, 21, 23, 26, 30};
-        jz.findNumberIn2DArray(matrix, 5);
+        main.findNumberIn2DArray(matrix, 5);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class jzTest {
         listNode1.next = listNode2;
         listNode2.next = listNode3;
 
-        jz.reversePrint(listNode1);
+        main.reversePrint(listNode1);
     }
 
     @Test
@@ -102,5 +102,132 @@ public class jzTest {
                 head = stack.pop().right;
             }
         }
+    }
+
+    @Test
+    public void fib() {
+        System.out.println(1000000007);
+        System.out.println(Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void isPalindrome2() {
+    }
+
+    @Test
+    public void isPalindrome() {
+    }
+
+    @Test
+    public void buildTree() {
+    }
+
+    @Test
+    public void quickSort() {
+    }
+
+    @Test
+    public void testQuickSort() {
+    }
+
+    @Test
+    public void findRepeatNumber3() {
+    }
+
+    @Test
+    public void findRepeatNumber2() {
+    }
+
+    @Test
+    public void findNumberIn2DArray__2() {
+    }
+
+    @Test
+    public void findNumberIn2DArray__1() {
+    }
+
+    @Test
+    public void reversePrint__3() {
+    }
+
+    @Test
+    public void reversePrint__2() {
+    }
+
+    @Test
+    public void reversePrint__1() {
+    }
+
+    @Test
+    public void treePSeq() {
+    }
+
+    @Test
+    public void treePre() {
+    }
+
+    @Test
+    public void treePre2() {
+    }
+
+    @Test
+    public void treePre3() {
+    }
+
+    @Test
+    public void treeMid3() {
+    }
+
+    @Test
+    public void treeTail3() {
+    }
+
+    @Test
+    public void treeMid() {
+    }
+
+    @Test
+    public void treeMid2() {
+    }
+
+    @Test
+    public void treeTail() {
+    }
+
+    @Test
+    public void hammingWeight() {
+        int n = 3;
+        n >>>= 1;
+        System.out.println(n);
+    }
+
+    @Test
+    public void exist() {
+    }
+
+    @Test
+    public void minArray2() {
+    }
+
+    @Test
+    public void minArray() {
+    }
+
+    @Test
+    public void numWays() {
+    }
+
+    @Test
+    public void myPow() {
+        System.out.println(main.myPow(0.00001, 2147483647));
+    }
+
+    @Test
+    public void printNumbers2() {
+        System.out.println(Arrays.toString(main.printNumbers2(8)));
+    }
+
+    @Test
+    public void printNumbers() {
     }
 }

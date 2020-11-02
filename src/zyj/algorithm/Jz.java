@@ -2,15 +2,407 @@ package zyj.algorithm;
 
 import utils.ListNode;
 import utils.TreeNode;
-import zyj.Pair;
 
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class Jz {
 
-    //8
+    //19
+    public boolean isMatch(String s, String p) {
+        if(p.equals(".*"))
+            return true;
+        if(p.length() != 0 && p.charAt(0) == '*')
+            return false;
+        for (int i = 1; i < p.length(); i++) {
+            if(p.charAt(i) == '*' && p.charAt(i - 1) == '*')
+                return false;
+        }
+
+        Map<String, Boolean> map = new HashMap<>();
+        return isMatch(s, 0, p, 0, map);
+    }
+
+    private boolean isMatch(String s, int s_index, String p, int p_index, Map<String, Boolean> map){
+        String keyStr = s_index + "," + p_index;
+        if(map.containsKey(keyStr))
+            return map.get(keyStr);
+
+        boolean re;
+
+        //s end
+        if(s_index == s.length()){
+            while(p_index < p.length() - 1 && p.charAt(p_index + 1) == '*'){
+                p_index += 2;
+            }
+            re = p_index == p.length();
+            map.put(keyStr,re);
+            return re;
+        }
+        else if(p_index >= p.length()){//s not end but p end
+            re = false;
+            map.put(keyStr,re);
+            return re;
+        }
+
+        boolean nextStar = p_index != p.length() - 1 && p.charAt(p_index + 1) == '*';
+        if(!isMatch_equal(s.charAt(s_index), p.charAt(p_index))){
+            if(nextStar){
+                re = isMatch(s, s_index, p, p_index + 2, map);
+            }
+            else{
+                re = false;
+            }
+        }
+        else{
+            if(nextStar){
+                re = isMatch(s, s_index + 1, p, p_index, map) || isMatch(s, s_index, p, p_index + 2, map);
+            }
+            else{
+                re = isMatch(s, s_index + 1, p, p_index + 1, map);
+            }
+        }
+
+        map.put(keyStr,re);
+        return re;
+    }
+
+    private boolean isMatch_equal(char s, char p){
+        if(p == '.')
+            return true;
+        return s == p;
+    }
+
+    //18
+    public ListNode deleteNode(ListNode head, int val) {
+        if(head == null)
+            return head;
+        if(head.val == val){
+            return head.next;
+        }
+
+        ListNode pre = head;
+        ListNode cur = head.next;
+        while(cur != null){
+            if(cur.val == val){
+                pre.next = cur.next;
+                return head;
+            }
+            pre = cur;
+            cur = cur.next;
+        }
+        throw new RuntimeException("can't found val");
+    }
+
+    //17
+    public int[] printNumbers2(int n) {
+        if(n == 0)
+            return new int[]{};
+
+        List<String> re = new LinkedList<>();
+        List<String> list1 = new LinkedList<>();
+        List<String> list2 = new LinkedList<>();
+        for (int i = 0; i < 10; i++) {
+            list1.add(String.valueOf(i));
+            if(i != 0){
+                re.add(String.valueOf(i));
+            }
+        }
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j <= 9; j++) {
+                String head = String.valueOf(j);
+                for (String s : list1) {
+                    String newS = head + s;
+                    list2.add(newS);
+                    if(newS.charAt(0) != '0')
+                        re.add(newS);
+                }
+            }
+
+            List<String> temp = list1;
+            list1 = list2;
+            list2 = temp;
+            list2.clear();
+        }
+
+        int[] ints = new int[re.size()];
+        int index = 0;
+        for (String s : re) {
+            ints[index] = Integer.parseInt(s);
+            index++;
+        }
+        return ints;
+//        return re.toArray(new String[0]);
+    }
+
+    //17
+    public int[] printNumbers(int n) {
+        if(n == 0)
+            return new int[]{};
+
+        int num = 1;
+        for (int i = 0; i < n; i++) {
+            num *= 10;
+        }
+        num--;
+
+        int[] re = new int[num];
+        for (int i = 0; i < num; i++) {
+            re[i] = i + 1;
+        }
+
+        return re;
+    }
+
+    //16
+    public double myPow(double x, int n) {
+        if(n == 0 || x == 1)
+            return 1;
+        if(x == -1){
+            if(n % 2 == 0)
+                return 1;
+            else
+                return -1;
+        }
+
+        double re = 1;
+        if(n == Integer.MIN_VALUE){
+            re *= x;
+            n++;
+        }
+        for (int i = 0; i < Math.abs(n); i++) {
+            re *= x;
+            if(!Double.isFinite(re) || re == 0)
+                break;
+        }
+        System.out.println(re);
+        if(n > 0)
+            return re;
+        else
+            return 1 / re;
+    }
+
+    //15
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int res = 0;
+        while(n != 0) {
+            res += n & 1;
+            n >>>= 1;
+        }
+        return res;
+    }
+
+    //12
+    public boolean exist(char[][] board, String word) {
+        if(word.length() == 0)
+            return true;
+        if(board.length == 0 || board[0].length == 0)
+            return false;
+
+        int n = board.length;
+        int m = board[0].length;
+        boolean[][] state = new boolean[n][m];
+        for (boolean[] booleans : state) {
+            Arrays.fill(booleans, true);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if(board[i][j] == word.charAt(0)){
+                    state[i][j] = false;
+                    if(exist(board, word.substring(1), state, i, j))
+                        return true;
+                    state[i][j] = true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean exist(char[][] board, String word, boolean[][] state, int row, int col){
+        if(word.length() == 0)
+            return true;
+
+        int n = board.length;
+        int m = board[0].length;
+
+        //left
+        if(col > 0){
+            int newrow = row;
+            int newcol = col - 1;
+            if(state[newrow][newcol] && board[newrow][newcol] == word.charAt(0)){
+                state[newrow][newcol] = false;
+                if(exist(board, word.substring(1), state, newrow, newcol))
+                    return true;
+                state[newrow][newcol] = true;
+            }
+        }
+
+        //right
+        if(col < m - 1){
+            int newrow = row;
+            int newcol = col + 1;
+            if(state[newrow][newcol] && board[newrow][newcol] == word.charAt(0)){
+                state[newrow][newcol] = false;
+                if(exist(board, word.substring(1), state, newrow, newcol))
+                    return true;
+                state[newrow][newcol] = true;
+            }
+        }
+
+        //up
+        if(row > 0){
+            int newrow = row - 1;
+            int newcol = col;
+            if(state[newrow][newcol] && board[newrow][newcol] == word.charAt(0)){
+                state[newrow][newcol] = false;
+                if(exist(board, word.substring(1), state, newrow, newcol))
+                    return true;
+                state[newrow][newcol] = true;
+            }
+        }
+
+        //down
+        if(row < n - 1){
+            int newrow = row + 1;
+            int newcol = col;
+            if(state[newrow][newcol] && board[newrow][newcol] == word.charAt(0)){
+                state[newrow][newcol] = false;
+                if(exist(board, word.substring(1), state, newrow, newcol))
+                    return true;
+                state[newrow][newcol] = true;
+            }
+        }
+
+        return false;
+    }
+
+    //11
+    public int minArray2(int[] numbers) {
+        if(numbers.length == 0)
+            return 0;
+        if(numbers.length == 1)
+            return numbers[0];
+        if(numbers[0] < numbers[numbers.length - 1])
+            return numbers[0];
+
+        int low = 0;
+        int high = numbers.length - 1;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (numbers[mid] < numbers[high]) {
+                high = mid;
+            } else if (numbers[mid] > numbers[high]) {
+                low = mid + 1;
+            } else {
+                high--;
+            }
+        }
+        return numbers[low];
+    }
+
+    //11
+    public int minArray(int[] numbers) {
+        if(numbers.length == 0)
+            return 0;
+        if(numbers.length == 1)
+            return numbers[0];
+        if(numbers[0] < numbers[numbers.length - 1])
+            return numbers[0];
+
+        for (int i = 1; i < numbers.length; i++) {
+            if(numbers[i] < numbers[i - 1])
+                return numbers[i];
+        }
+
+        return numbers[0];
+    }
+
+    //10-II
+    public int numWays(int n) {
+        if(n == 0 || n == 1)
+            return 1;
+
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i < n + 1; i++) {
+            dp[i] = (dp[i - 1] + dp[i - 2]) % 1000000007;
+        }
+
+        return dp[n];
+    }
+
+    //10
+    public int fib(int n) {
+        if(n == 0)
+            return 0;
+        if(n == 1)
+            return 1;
+
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i < dp.length; i++) {
+            dp[i] = (dp[i - 1] + dp[i - 2]) % 1000000007;
+        }
+
+        return dp[n];
+    }
+
+    //9
+    public boolean isPalindrome2(int x) {
+        if(x < 0)
+            return false;
+        if(x < 10)
+            return true;
+
+        int temp = x;
+        int count = 0;
+        while(temp >= 10){
+            temp /= 10;
+            count++;
+        }
+
+        int left = count;
+        int right = 0;
+        while(left > right){
+            if(isPalindrome2_getRight(x, left) != isPalindrome2_getRight(x, right)){
+                return false;
+            }
+            left--;
+            right++;
+        }
+        return true;
+    }
+
+    private int isPalindrome2_getRight(int x, int index){
+        for (int i = 0; i < index; i++) {
+            x /= 10;
+        }
+        return x % 10;
+    }
+
+    //9
+    public boolean isPalindrome(int x) {
+        if(x < 0)
+            return false;
+        if(x < 10)
+            return true;
+
+        String s = String.valueOf(x);
+        int left = 0;
+        int right = s.length() - 1;
+        while(left < right){
+            if(s.charAt(left) != s.charAt(right)){
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    //8 CQueue
 
     //7
     public TreeNode buildTree(int[] preorder, int[] inorder) {
