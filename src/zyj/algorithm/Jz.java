@@ -7,6 +7,246 @@ import java.util.*;
 
 public class Jz {
 
+    //28
+    //not recurrent
+    public boolean isSymmetric2(TreeNode root) {
+        if(root == null)
+            return true;
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        queue.offer(root.left);
+        queue.offer(root.right);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for (int i = 0; i < size / 2; i++) {
+                TreeNode cur = queue.poll();
+                if(cur != null){
+                    queue.offer(cur.left);
+                    queue.offer(cur.right);
+                }
+
+                stack.push(cur);
+            }
+            for (int i = 0; i < size / 2; i++) {
+                TreeNode cur = queue.poll();
+                if(cur != null){
+                    queue.offer(cur.left);
+                    queue.offer(cur.right);
+                }
+
+                TreeNode top = stack.pop();
+                if(cur == null && top == null)
+                    continue;
+                if(cur == null || top == null)
+                    return false;
+                if(cur.val != top.val){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //28
+    public boolean isSymmetric(TreeNode root) {
+        if(root == null)
+            return true;
+        return isSymmetric_isMirrorTree(root.left, root.right);
+    }
+
+    private boolean isSymmetric_isMirrorTree(TreeNode t1, TreeNode t2){
+        if(t1 == null && t2 == null){
+            return true;
+        }
+        if(t1 == null || t2 == null){
+            return false;
+        }
+        if(t1.val != t2.val){
+            return false;
+        }
+        return isSymmetric_isMirrorTree(t1.left, t2.right) && isSymmetric_isMirrorTree(t1.right, t2.left);
+    }
+
+    //27
+    public TreeNode mirrorTree(TreeNode root) {
+        if(root == null)
+            return null;
+        TreeNode temp = mirrorTree(root.left);
+        root.left = mirrorTree(root.right);
+        root.right = temp;
+        return root;
+    }
+
+    //26
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        if(A == null || B == null)
+            return false;
+
+        if(A.val == B.val && isSubStructure_isSub(A, B)){
+            return true;
+        }
+        return isSubStructure(A.left, B) || isSubStructure(A.right, B);
+    }
+
+    private boolean isSubStructure_isSub(TreeNode A, TreeNode B){
+        if(A == null && B == null)
+            return true;
+        if(A == null || B == null)
+            return false;
+        if(A.val != B.val){
+            return false;
+        }
+        if(B.left != null && !isSubStructure_isSub(A.left, B.left)){
+            return false;
+        }
+        if(B.right != null && !isSubStructure_isSub(A.right, B.right)) {
+            return false;
+        }
+        return true;
+    }
+
+    //25
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1 == null)
+            return l2;
+        if(l2 == null)
+            return l1;
+
+        ListNode head = new ListNode(0);
+        ListNode cur = head;
+        while(l1 != null){
+            if(l1.val > l2.val){
+                ListNode temp = l1;
+                l1 = l2;
+                l2 = temp;
+            }
+            cur.next = l1;
+            cur = cur.next;
+            l1 = l1.next;
+        }
+        cur.next = l2;
+
+        return head.next;
+    }
+
+    //24
+    public ListNode reverseList(ListNode head) {
+        if(head == null)
+            return null;
+        return getKthFromEnd_reverse(head);
+    }
+
+    //22
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        if(head == null)
+            return null;
+        if(k <= 0)
+            return null;
+
+        ListNode tail = getKthFromEnd_reverse(head);
+
+        ListNode cur = tail;
+        for (int i = 1; i < k; i++) {
+            if(cur == null){
+                return null;
+            }
+            cur = cur.next;
+        }
+        head = getKthFromEnd_reverse(tail);
+        return cur;
+    }
+
+    private ListNode getKthFromEnd_reverse(ListNode head){
+        ListNode pre = null;
+        while(head != null){
+            ListNode nextNode = head.next;
+            head.next = pre;
+            pre = head;
+            head = nextNode;
+        }
+        return pre;
+    }
+
+    //21
+    public int[] exchange(int[] nums) {
+        if(nums.length <= 1)
+            return nums;
+
+        int i = 0;
+        while(i < nums.length && nums[i] % 2 != 0){
+            i++;
+        }
+        if(i == nums.length){
+            return nums;
+        }
+        int temp = nums[i];
+
+        int j = nums.length - 1;
+        while(i < j){
+            while(i < j){
+                if(nums[j] % 2 == 1){
+                    nums[i] = nums[j];
+                    break;
+                }
+                j--;
+            }
+            while(i < j){
+                if(nums[i] % 2 == 0){
+                    nums[j] = nums[i];
+                    break;
+                }
+                i++;
+            }
+        }
+        nums[i] = temp;
+
+        return nums;
+    }
+
+    //20
+    public boolean isNumber(String s) {
+        s = s.strip();
+        for (int i = 0; i < s.length(); i++) {
+            if(s.charAt(i) == 'e' || s.charAt(i) == 'E'){
+                return isNumber_withoutE(s.substring(0, i)) && isNumber_integer(s.substring(i + 1));
+            }
+        }
+        return isNumber_withoutE(s);
+    }
+
+    private boolean isNumber_withoutE(String s){
+        if(s.length() == 0)
+            return false;
+        if(s.charAt(0) == '-' || s.charAt(0) == '+')
+            s = s.substring(1);
+        if(s.length() == 0)
+            return false;
+        boolean dotFlag = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if(c == '.'){
+                if(i == 0 && s.length() == 1)
+                    return false;
+                if(!dotFlag){
+                    dotFlag = true;
+                }
+                else{
+                    return false;
+                }
+            }
+            else if(c < '0' || c > '9')
+                return false;
+        }
+        return true;
+    }
+
+    private boolean isNumber_integer(String s){
+        if(!isNumber_withoutE(s))
+            return false;
+        return s.indexOf('.') == -1;
+    }
+
     //19
     public boolean isMatch(String s, String p) {
         if(p.equals(".*"))
@@ -40,7 +280,7 @@ public class Jz {
         }
         else if(p_index >= p.length()){//s not end but p end
             re = false;
-            map.put(keyStr,re);
+            map.put(keyStr, re);
             return re;
         }
 
