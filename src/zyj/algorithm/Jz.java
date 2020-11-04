@@ -1,11 +1,98 @@
 package zyj.algorithm;
 
+import genneric.A;
 import utils.ListNode;
 import utils.TreeNode;
 
+import javax.management.relation.InvalidRelationTypeException;
 import java.util.*;
 
 public class Jz {
+
+    //31
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        if(pushed.length != popped.length)
+            return false;
+        if(pushed.length == 0){
+            return true;
+        }
+
+        Map<Integer, Integer> map = new HashMap<>();
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < pushed.length; i++) {
+            map.put(pushed[i], i);
+        }
+
+        int top = -1;
+        for (int cur : popped) {
+            if (!map.containsKey(cur))
+                return false;
+            int seq = map.get(cur);
+            if (seq >= top) {
+                top = seq - 1;
+                set.add(seq);
+                while (set.contains(top)) {
+                    top--;
+                }
+            }
+            else
+                return false;
+        }
+
+        return true;
+    }
+
+    //29
+    public int[] spiralOrder(int[][] matrix) {
+        if(matrix.length == 0 || matrix[0].length == 0)
+            return new int[]{};
+
+        int n = matrix.length;
+        int m = matrix[0].length;
+        int[] re = new int[n * m];
+        re[0] = matrix[0][0];
+        int index = 1;
+        int row = 0;
+        int col = 0;
+        boolean[][] visited = new boolean[n][m];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(visited[i], false);
+        }
+        visited[0][0] = true;
+
+        while(index < n * m){
+            //right
+            while(col + 1 < m && !visited[row][col + 1]){
+                col++;
+                visited[row][col] = true;
+                re[index] = matrix[row][col];
+                index++;
+            }
+            //down
+            while(row + 1 < n && !visited[row + 1][col]){
+                row++;
+                visited[row][col] = true;
+                re[index] = matrix[row][col];
+                index++;
+            }
+            //left
+            while(col - 1 >= 0 && !visited[row][col - 1]){
+                col--;
+                visited[row][col] = true;
+                re[index] = matrix[row][col];
+                index++;
+            }
+            //up
+            while(row - 1 >= 0 && !visited[row - 1][col]){
+                row--;
+                visited[row][col] = true;
+                re[index] = matrix[row][col];
+                index++;
+            }
+        }
+
+        return re;
+    }
 
     //28
     //not recurrent
