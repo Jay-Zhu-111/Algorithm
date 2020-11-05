@@ -230,4 +230,81 @@ public class jzTest {
     @Test
     public void printNumbers() {
     }
+
+    @Test
+    public void verifyPostorder() {
+        System.out.println(main.verifyPostorder(new int[]{4,8,6,12,16,14,10}));
+    }
+
+    @Test
+    public void levelOrderIII() {
+    }
+
+    @Test
+    public void levelOrderII() {
+    }
+
+    @Test
+    public void levelOrder() {
+    }
+
+    @Test
+    public void validateStackSequences() {
+    }
+
+    @Test
+    public void spiralOrder() {
+    }
+
+    @Test
+    public void isSymmetric2() {
+    }
+
+    @Test
+    public void isSymmetric() {
+    }
+
+    @Test
+    public void mirrorTree() {
+    }
+
+    @Test
+    public void isSubStructure() {
+    }
+
+    @Test
+    public void mergeTwoLists() {
+    }
+
+    @Test
+    public void reverseList() {
+    }
+
+    @Test
+    public void getKthFromEnd() {
+    }
+
+    @Test
+    public void exchange() {
+    }
+
+    @Test
+    public void isNumber() {
+    }
+
+    @Test
+    public void isMatch() {
+    }
+
+    @Test
+    public void deleteNode() {
+    }
+
+    @Test
+    public void pathSum() {
+        TreeNode n = new TreeNode(5);
+        n.left = new TreeNode(4);
+        n.right = new TreeNode(8);
+        System.out.println(main.pathSum(n, 13));
+    }
 }

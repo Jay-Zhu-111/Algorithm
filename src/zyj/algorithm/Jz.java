@@ -9,6 +9,165 @@ import java.util.*;
 
 public class Jz {
 
+    //34
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        if(root == null)
+            return new LinkedList<>();
+
+        List<Integer> path = new LinkedList<>();
+        List<List<Integer>>allPath = new LinkedList<>();
+        pathSum(root, sum, path, allPath);
+        return allPath;
+    }
+
+    private void pathSum(TreeNode root, int sum, List<Integer>path, List<List<Integer>>allPath){
+        if(root == null)
+            return;
+
+        if(root.val == sum && root.left == null && root.right == null){
+            path.add(root.val);
+            allPath.add(new LinkedList<>(path));
+            path.remove(path.size() - 1);
+        }
+        else{
+            path.add(root.val);
+            pathSum(root.left, sum - root.val, path, allPath);
+            pathSum(root.right, sum - root.val, path, allPath);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    //33
+    public boolean verifyPostorder(int[] postorder) {
+        if(postorder.length <= 2)
+            return true;
+
+        Map<String, Boolean> map = new HashMap<>();
+        return verifyPostorder(postorder, 0, postorder.length - 1);
+    }
+
+    private boolean verifyPostorder(int[] postorder, int left, int right){
+        if(left + 1 >= right)
+            return true;
+
+        int root = postorder[right];
+        int index = left;
+        while(index < right && postorder[index] < root){
+            index++;
+        }
+        int mid_right = index;
+        while(index < right && postorder[index] > root){
+            index++;
+        }
+        if(index != right)
+            return false;
+        return verifyPostorder(postorder, left, mid_right - 1) && verifyPostorder(postorder, mid_right, right - 1);
+    }
+
+    //32-III
+    public List<List<Integer>> levelOrderIII(TreeNode root) {
+        if(root == null){
+            return new LinkedList<>();
+        }
+
+        List<List<Integer>> lists = new LinkedList<>();
+        Stack<TreeNode> stack1 = new Stack<>();
+        Stack<TreeNode> stack2 = new Stack<>();
+        stack1.push(root);
+        int level = 0;
+        while(!stack1.isEmpty()){
+            level++;
+            int size = stack1.size();
+            List<Integer> list = new LinkedList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = stack1.pop();
+                assert cur != null;
+
+                list.add(cur.val);
+                if(level % 2 == 1){
+                    if(cur.left != null){
+                        stack2.push(cur.left);
+                    }
+                    if(cur.right != null){
+                        stack2.push(cur.right);
+                    }
+                }
+                else{
+                    if(cur.right != null){
+                        stack2.push(cur.right);
+                    }
+                    if(cur.left != null){
+                        stack2.push(cur.left);
+                    }
+                }
+            }
+            lists.add(list);
+
+            Stack<TreeNode> temp = stack1;
+            stack1 = stack2;
+            stack2 = temp;
+        }
+
+        return lists;
+    }
+
+    //32-II
+    public List<List<Integer>> levelOrderII(TreeNode root) {
+        if(root == null){
+            return new LinkedList<>();
+        }
+
+        List<List<Integer>> lists = new LinkedList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            List<Integer> list = new LinkedList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue.poll();
+                assert cur != null;
+
+                list.add(cur.val);
+                if(cur.left != null){
+                    queue.offer(cur.left);
+                }
+                if(cur.right != null){
+                    queue.offer(cur.right);
+                }
+            }
+            lists.add(list);
+        }
+
+        return lists;
+    }
+
+    //32
+    public int[] levelOrder(TreeNode root) {
+        if(root == null){
+            return new int[]{};
+        }
+
+        List<Integer> list = new LinkedList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue.poll();
+                assert cur != null;
+
+                list.add(cur.val);
+                if(cur.left != null){
+                    queue.offer(cur.left);
+                }
+                if(cur.right != null){
+                    queue.offer(cur.right);
+                }
+            }
+        }
+        return list.stream().mapToInt(Integer::intValue).toArray();
+    }
+
     //31
     public boolean validateStackSequences(int[] pushed, int[] popped) {
         if(pushed.length != popped.length)
