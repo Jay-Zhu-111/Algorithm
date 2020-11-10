@@ -1,13 +1,223 @@
 package zyj.algorithm;
 
 import genneric.A;
+import utils.Node;
 import utils.ListNode;
 import utils.TreeNode;
 
 import javax.management.relation.InvalidRelationTypeException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Jz {
+
+    //37
+    // Encodes a tree to a single string.
+    public String serialize2(TreeNode root) {
+        if(root == null)
+            return "[null]";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append('[');
+        Queue<TreeNode> queue = new LinkedList<>();
+        Queue<Integer> position = new LinkedList<>();
+        queue.offer(root);
+        position.offer(1);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    //37
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(root == null)
+            return "[null]";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append('[');
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(true){
+            int size = queue.size();
+            boolean flag = false;
+            StringBuilder epoch = new StringBuilder();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue.poll();
+                if(cur != null){
+                    epoch.append(cur.val);
+                    epoch.append(',');
+                    flag = true;
+                    queue.offer(cur.left);
+                    queue.offer(cur.right);
+                }
+                else{
+                    epoch.append("null");
+                    epoch.append(',');
+                    queue.offer(null);
+                    queue.offer(null);
+                }
+            }
+            if(!flag){
+                stringBuilder.setCharAt(stringBuilder.length() - 1, ']');
+                break;
+            }
+            else{
+                stringBuilder.append(epoch);
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data == null || data.equals("") || data.equals("[]") || data.equals("[null]"))
+            return null;
+
+        String[] datas = data.substring(1, data.length() - 1).split(",");
+        TreeNode head = deserialize_one(datas[0]);
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(head);
+        int index = 1;
+        while(index < datas.length){
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode left = deserialize_one(datas[index]);
+                index++;
+                queue.offer(left);
+
+                TreeNode right = deserialize_one(datas[index]);
+                index++;
+                queue.offer(right);
+
+                TreeNode cur = queue.poll();
+                if(cur != null){
+                    cur.left = left;
+                    cur.right = right;
+                }
+            }
+        }
+
+        return head;
+    }
+
+    private TreeNode deserialize_one(String data){
+        if(data.equals("null"))
+            return null;
+        else{
+            return new TreeNode(Integer.parseInt(data));
+        }
+    }
+
+    public void tailorder(TreeNode root){
+        Stack<TreeNode> stack = new Stack<>();
+        Stack<Boolean> flag = new Stack<>();
+        TreeNode p = root;
+        while(p != null || !stack.isEmpty()){
+            while(p != null){
+                stack.push(p);
+                flag.push(false);
+                p = p.left;
+            }
+            while(!stack.isEmpty() && flag.peek()){
+                System.out.println(stack.pop().val);
+                flag.pop();
+            }
+            if(!stack.isEmpty() && !flag.peek()){
+                flag.pop();
+                flag.push(true);
+                p = stack.peek().right;
+            }
+        }
+    }
+
+    //36
+    public TreeNode treeToDoublyList2(TreeNode root){
+        if(root == null)
+            return null;
+
+        List<TreeNode> list = new ArrayList<>();
+
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode p = root;
+        while(p != null || !stack.isEmpty()){
+            while(p != null){
+                stack.push(p);
+                p = p.left;
+            }
+            if(!stack.isEmpty()){
+                p = stack.pop();
+                list.add(p);
+                p = p.right;
+            }
+        }
+
+        TreeNode head = list.get(0);
+        for (int i = 0; i < list.size() - 1; i++) {
+            list.get(i).right = list.get(i + 1);
+            list.get(i + 1).left = list.get(i);
+        }
+        head.left = list.get(list.size() - 1);
+        list.get(list.size() - 1).right = head;
+
+        return head;
+    }
+
+    //36
+    public TreeNode treeToDoublyList(TreeNode root) {
+        if(root == null)
+            return null;
+
+        List<TreeNode> list = new ArrayList<>();
+        treeToDoublyList_midOrder(root, list);
+        TreeNode head = list.get(0);
+        for (int i = 0; i < list.size() - 1; i++) {
+            list.get(i).right = list.get(i + 1);
+            list.get(i + 1).left = list.get(i);
+        }
+        head.left = list.get(list.size() - 1);
+        list.get(list.size() - 1).right = head;
+
+        return head;
+    }
+
+    private void treeToDoublyList_midOrder(TreeNode root, List<TreeNode> list){
+        if(root == null)
+            return;
+
+        treeToDoublyList_midOrder(root.left, list);
+        list.add(root);
+        treeToDoublyList_midOrder(root.right, list);
+    }
+
+    //35
+    public Node copyRandomList(Node head) {
+        if(head == null)
+            return null;
+
+        Map<Node, Node> map = new HashMap<>();
+        Node p = head;
+        while(p != null){
+            map.put(p, new Node(p.val));
+            p = p.next;
+        }
+
+        p = head;
+        while(p != null){
+            map.get(p).next = map.get(p.next);
+            map.get(p).random = map.get(p.random);
+            p = p.next;
+        }
+
+        return map.get(head);
+    }
 
     //34
     public List<List<Integer>> pathSum(TreeNode root, int sum) {

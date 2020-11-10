@@ -1,4 +1,4 @@
-package zyj;
+package thread;
 
 public class Singleton {
 

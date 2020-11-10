@@ -5,6 +5,7 @@ import utils.ListNode;
 import utils.TreeNode;
 import zyj.algorithm.Jz;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -306,5 +307,43 @@ public class jzTest {
         n.left = new TreeNode(4);
         n.right = new TreeNode(8);
         System.out.println(main.pathSum(n, 13));
+    }
+
+    @Test
+    public void tailorder() {
+        TreeNode head = new TreeNode(4);
+        head.left = new TreeNode(2);
+        head.left.left = new TreeNode(1);
+        head.left.right = new TreeNode(3);
+        head.right = new TreeNode(5);
+        head.right.right = new TreeNode(6);
+        main.tailorder(head);
+    }
+
+    @Test
+    public void treeToDoublyList2() {
+    }
+
+    @Test
+    public void treeToDoublyList() {
+    }
+
+    @Test
+    public void copyRandomList() {
+    }
+
+    @Test
+    public void serialize() {
+        TreeNode head = new TreeNode(4);
+        head.left = new TreeNode(2);
+        head.left.left = new TreeNode(1);
+        head.left.right = new TreeNode(3);
+        head.right = new TreeNode(5);
+        head.right.right = new TreeNode(6);
+        System.out.println(main.serialize(head));
+    }
+
+    @Test
+    public void deserialize() {
     }
 }

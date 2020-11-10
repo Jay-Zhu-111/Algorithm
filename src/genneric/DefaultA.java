@@ -1,6 +1,6 @@
 package genneric;
 
-public class DefaultA extends A {
+public class DefaultA extends A implements Generator<String>, interA {
 
     public Integer i;
 
