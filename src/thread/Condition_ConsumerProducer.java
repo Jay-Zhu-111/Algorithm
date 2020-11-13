@@ -68,6 +68,7 @@ public class Condition_ConsumerProducer {
         private void produce(){
             while(flag){
                 lock.lock();
+                System.out.println("producer get into lock");
                 try {
                     while(queue.size() == queueSize){
                         System.out.println(queue);
