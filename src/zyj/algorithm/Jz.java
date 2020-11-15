@@ -12,28 +12,45 @@ import java.util.*;
 public class Jz {
 
     //37
-    // Encodes a tree to a single string.
+    //mem error
     public String serialize2(TreeNode root) {
         if(root == null)
             return "[null]";
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append('[');
-        Queue<TreeNode> queue = new LinkedList<>();
-        Queue<Integer> position = new LinkedList<>();
-        queue.offer(root);
-        position.offer(1);
-        while(!queue.isEmpty()){
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                
+        stringBuilder.append("[");
+        Map<Integer, TreeNode> map1 = new HashMap<>();
+        Map<Integer, TreeNode> map2 = new HashMap<>();
+        map1.put(1, root);
+        int limit = 1;
+        while(map1.size() != 0){
+            for (int i = 1; i <= limit; i++) {
+                if(map1.containsKey(i)){
+                    TreeNode cur = map1.remove(i);
+                    stringBuilder.append(cur.val);
+                    stringBuilder.append(',');
+                    if(cur.left != null){
+                        map2.put(2 * i - 1, cur.left);
+                    }
+                    if(cur.right != null){
+                        map2.put(2 * i, cur.right);
+                    }
+                }
+                else{
+                    stringBuilder.append("null,");
+                }
             }
+            Map<Integer, TreeNode> temp = map1;
+            map1 = map2;
+            map2 = temp;
+            limit *= 2;
         }
-
+        stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "]");
         return stringBuilder.toString();
     }
 
     //37
+    //mem error
     // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
         if(root == null)
@@ -886,6 +903,143 @@ public class Jz {
             n >>>= 1;
         }
         return res;
+    }
+
+    //14-II errorflag 120
+    public int cuttingRopeII(int n) {
+        ModNum max = new ModNum(1);
+        for (int m = 2; m < n; m++) {
+            int base = n / m;
+            int remain = n % m;
+            ModNum result = new ModNum(1);
+            for (int i = 0; i < remain; i++) {
+                result.mul(base + 1);
+            }
+            for (int i = 0; i < m - remain; i++) {
+                result.mul(base);
+            }
+            if(result.compareTo(max)){
+                max = result;
+            }
+        }
+
+        return max.num;
+    }
+
+
+    private static class ModNum{
+        public int num;
+        public int level = 0;
+        public static final int mod = (int) Math.pow(10, 9) + 7;
+
+        public ModNum(){
+
+        }
+
+        public ModNum(int num){
+            if(num > mod){
+                num %= mod;
+                level += num / mod;
+            }
+            this.num = num;
+        }
+
+        public ModNum(int num, int level){
+            if(num > mod){
+                num %= mod;
+                level += num / mod;
+            }
+            this.num = num;
+            this.level = level;
+        }
+
+        public ModNum copyOf(){
+            return new ModNum(num, level);
+        }
+
+        boolean compareTo(ModNum a){
+            if(level > a.level){
+                return true;
+            }
+            else if(level == a.level){
+                return num > a.num;
+            }
+            else{
+                return false;
+            }
+        }
+
+        public void mul(int time){
+            if(num > mod){
+                level += num / mod;
+                num %= mod;
+                mul(time);
+                return;
+            }
+
+            if(time == 1){
+                return;
+            }
+
+            if(Integer.MAX_VALUE / time < num){
+                num *= time;
+                level += num / mod;
+                num %= mod;
+                return;
+            }
+
+            int re = num;
+            for (int i = 0; i < time - 1; i++) {
+                re += num;
+                level += re / mod;
+                re %= mod;
+            }
+
+            num = re;
+        }
+    }
+
+    //14-I
+    public int cuttingRope2(int n) {
+        if(n == 2)
+            return 1;
+        if(n == 3)
+            return 2;
+
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        dp[2] = 2;
+        dp[3] = 3;
+        for (int i = 4; i < n + 1; i++) {
+            int max = 1;
+            for (int j = 1; j <= i / 2; j++) {
+                max = Math.max(max, dp[j] * dp[i - j]);
+            }
+            dp[i] = max;
+        }
+
+        return dp[n];
+    }
+
+    //14-I
+    public int cuttingRope(int n) {
+        int max = 1;
+
+        for (int m = 2; m < n; m++) {
+            int base = n / m;
+            int remain = n % m;
+            int result = 1;
+            for (int i = 0; i < remain; i++) {
+                result *= base + 1;
+            }
+            for (int i = 0; i < m - remain; i++) {
+                result *= base;
+            }
+            max = Math.max(max, result);
+        }
+
+        return max;
     }
 
     //12

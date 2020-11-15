@@ -340,10 +340,30 @@ public class jzTest {
         head.left.right = new TreeNode(3);
         head.right = new TreeNode(5);
         head.right.right = new TreeNode(6);
-        System.out.println(main.serialize(head));
+        System.out.println(main.serialize2(head));
     }
 
     @Test
     public void deserialize() {
+        TreeNode treeNode = main.deserialize("[4,2,5,1,3,null,6]");
+        System.out.println(treeNode.val);
+        System.out.println(treeNode.left.val);
+        System.out.println(treeNode.right.val);
+    }
+
+    @Test
+    public void cuttingRopeII() {
+    }
+
+    @Test
+    public void cuttingRope2() {
+    }
+
+    @Test
+    public void cuttingRope() {
+    }
+
+    @Test
+    public void serialize2() {
     }
 }
