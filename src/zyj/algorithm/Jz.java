@@ -9,7 +9,182 @@ import javax.management.relation.InvalidRelationTypeException;
 import java.lang.reflect.Array;
 import java.util.*;
 
+
 public class Jz {
+
+    //43
+//    public int countDigitOne(int n) {
+//        int weight = 0;
+//        while()
+//    }
+
+    //42
+    public int maxSubArray(int[] nums) {
+        int n = nums.length;
+        int pre = nums[n - 1];
+        int max = pre;
+        for(int i = n - 2; i >= 0; i--){
+            int cur = nums[i];
+            if(pre > 0){
+                cur += pre;
+            }
+            max = Math.max(max, cur);
+            pre = cur;
+        }
+
+        return max;
+    }
+
+    //41
+    class MedianFinder {
+
+        Node head;
+        Node point;
+        int size;
+
+        /** initialize your data structure here. */
+        public MedianFinder() {
+            size = 0;
+        }
+
+        public void addNum(int num) {
+            if(head == null){
+                head = new Node(num);
+                point = head;
+                size++;
+                return;
+            }
+
+            if(num >= point.val){
+                //右边插入num
+                if(num == point.val){
+                    Node temp = point.next;
+                    point.next = new Node(num);
+                    point.next.next = temp;
+                }
+                else{
+                    Node cur = point;
+                    while(cur.next != null && cur.next.val < num){
+                        cur = cur.next;
+                    }
+
+                    //已找到插入位置
+                    if(cur.next == null){
+                        cur.next = new Node(num);
+                    }
+                    else{
+                        Node temp = cur.next;
+                        cur.next = new Node(num);
+                        cur.next.next = temp;
+                    }
+                }
+                size++;
+
+                //为奇数后移point
+                if(size % 2 == 1){
+                    point = point.next;
+                }
+            }
+            else{
+                Node insert;
+                if(head.val >= num){//头插
+                    Node temp = head;
+                    head = new Node(num);
+                    head.next = temp;
+                    insert = head;
+                }
+                else{
+                    Node cur = head;
+                    while(cur.next.val < num){
+                        cur = cur.next;
+                    }
+                    Node temp = cur.next;
+                    cur.next = new Node(num);
+                    cur.next.next = temp;
+                    insert = cur.next;
+                }
+                size++;
+
+                //为偶数前移point
+                if(size % 2 == 0){
+                    Node cur = insert;
+                    while(cur.next != point){
+                        cur = cur.next;
+                    }
+                    point = cur;
+                }
+            }
+        }
+
+        public double findMedian() {
+            if(size % 2 == 0){
+                return ((double) (point.val + point.next.val)) / 2;
+            }
+            return point.val;
+        }
+    }
+
+    /**
+     * Your MedianFinder object will be instantiated and called as such:
+     * MedianFinder obj = new MedianFinder();
+     * obj.addNum(num);
+     * double param_2 = obj.findMedian();
+     */
+
+    //40
+    public int[] getLeastNumbers(int[] arr, int k) {
+        Arrays.sort(arr);
+        int[] re = new int[k];
+        System.arraycopy(arr, 0, re, 0, k);
+        return re;
+    }
+
+    //39
+    public int majorityElement(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int num : nums){
+            if(map.containsKey(num)){
+                map.put(num, map.get(num) + 1);
+            }
+            else{
+                map.put(num, 1);
+            }
+            if(map.get(num) >= (nums.length + 1) / 2){
+                return num;
+            }
+        }
+        return -1;
+    }
+
+    //38
+    public String[] permutation(String s) {
+        if(s.length() == 0)
+            return new String[]{};
+
+        Set<String> set = new HashSet<>();
+        Set<String> set2 = new HashSet<>();
+        set.add(s.substring(0, 1));
+        for (int i = 1; i < s.length(); i++) {
+            char c = s.charAt(i);
+            for(String s1 : set){
+                insertChar(c, s1, set2);
+            }
+            Set<String> temp = set;
+            set = set2;
+            set2 = temp;
+            set2.clear();
+        }
+        return set.toArray(new String[0]);
+    }
+
+    private void insertChar(char c, String s1, Set<String> set){
+        set.add(c + s1);
+        set.add(s1 + c);
+        for (int i = 1; i < s1.length(); i++) {
+            String newStr = s1.substring(0, i) + c + s1.substring(i);
+            set.add(newStr);
+        }
+    }
 
     //37
     //mem error
