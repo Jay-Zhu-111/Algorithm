@@ -366,4 +366,25 @@ public class jzTest {
     @Test
     public void serialize2() {
     }
+
+    @Test
+    public void findNthDigit() {
+        System.out.println(main.findNthDigit(1000000000));
+    }
+
+    @Test
+    public void maxSubArray() {
+    }
+
+    @Test
+    public void getLeastNumbers() {
+    }
+
+    @Test
+    public void majorityElement() {
+    }
+
+    @Test
+    public void permutation() {
+    }
 }

@@ -12,6 +12,42 @@ import java.util.*;
 
 public class Jz {
 
+    //44
+    public int findNthDigit(int n) {
+        if(n < 10){
+            return n;
+        }
+
+        List<Integer> list = new LinkedList<>();
+        int count = 10;
+        list.add(count);
+
+        int base = 2;
+        int num = 90;
+        while(base * num <= Integer.MAX_VALUE - count){
+            count += base * num;
+            list.add(count);
+            base++;
+            num *= 10;
+        }
+
+        int index = list.size();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) > n) {
+                index = i;
+                break;
+            }
+        }
+        int remain = n - list.get(index - 1);
+        int real_num = (int)Math.pow(10, index) + (remain / (index + 1));
+        int num_index = remain % (index + 1);
+        System.out.println(list);
+        System.out.println("remain  " + remain);
+        System.out.println("real_num  " + real_num);
+        System.out.println("num_index" + num_index);
+        return String.valueOf(real_num).charAt(num_index) - '0';
+    }
+
     //43
 //    public int countDigitOne(int n) {
 //        int weight = 0;
