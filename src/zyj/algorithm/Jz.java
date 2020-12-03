@@ -157,7 +157,7 @@ public class Jz {
     }
 
     //49
-    public int nthUglyNumber(int n) {
+    public int nthUglyNumber2(int n) {
         if(n == 1){
             return 1;
         }
@@ -185,6 +185,52 @@ public class Jz {
         }
 
         return array[n - 1];
+    }
+
+    //49
+    //timeout
+    public int nthUglyNumber(int n) {
+        if(n == 1){
+            return 1;
+        }
+        int count = 1;
+        int num = 2;
+        while(count != n){
+            if(isUgly(num)){
+                count++;
+            }
+            num++;
+        }
+        return num - 1;
+    }
+
+    private boolean isUgly(int n){
+        if(n == 1){
+            return true;
+        }
+
+        while(n % 2 == 0){
+            n /= 2;
+        }
+        if(n == 1){
+            return true;
+        }
+
+        while(n % 3 == 0){
+            n /= 3;
+        }
+        if(n == 1){
+            return true;
+        }
+
+        while(n % 5 == 0){
+            n /= 5;
+        }
+        if(n == 1){
+            return true;
+        }
+
+        return false;
     }
 
     //46
@@ -1712,7 +1758,6 @@ public class Jz {
     }
 
     //8 CQueue
-
 
     //7
     public TreeNode buildTree(int[] preorder, int[] inorder) {
