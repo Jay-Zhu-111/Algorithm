@@ -387,4 +387,9 @@ public class jzTest {
     @Test
     public void permutation() {
     }
+
+    @Test
+    public void countDigitOne() {
+        System.out.println(main.countDigitOne(5678));
+    }
 }

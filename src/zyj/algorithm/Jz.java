@@ -12,47 +12,120 @@ import java.util.*;
 
 public class Jz {
 
-    //44
-    public int findNthDigit(int n) {
-        if(n < 10){
-            return n;
+    //46
+    public int translateNum(int num) {
+        if(num < 10){
+            return 1;
         }
 
-        List<Integer> list = new LinkedList<>();
-        int count = 10;
-        list.add(count);
-
-        int base = 2;
-        int num = 90;
-        while(base * num <= Integer.MAX_VALUE - count){
-            count += base * num;
-            list.add(count);
-            base++;
-            num *= 10;
-        }
-
-        int index = list.size();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) > n) {
-                index = i;
-                break;
+        String str = String.valueOf(num);
+        int[] dp = new int[str.length() + 1];
+        dp[str.length() - 1] = 1;
+        dp[str.length()] = 1;
+        for (int i = str.length() - 2; i >= 0; i--) {
+            char c = str.charAt(i);
+            if(c == '1' || (c == '2' && str.charAt(i + 1) < '6')){
+                dp[i] = dp[i + 1] + dp[i + 2];
+            }
+            else{
+                dp[i] = dp[i + 1];
             }
         }
-        int remain = n - list.get(index - 1);
-        int real_num = (int)Math.pow(10, index) + (remain / (index + 1));
-        int num_index = remain % (index + 1);
-        System.out.println(list);
-        System.out.println("remain  " + remain);
-        System.out.println("real_num  " + real_num);
-        System.out.println("num_index" + num_index);
-        return String.valueOf(real_num).charAt(num_index) - '0';
+        return dp[0];
+    }
+
+    //45
+    public String minNumber(int[] nums) {
+        if(nums.length == 1){
+            return String.valueOf(nums[0]);
+        }
+
+        List<String> list = new ArrayList<>();
+        for(int num : nums){
+            list.add(String.valueOf(num));
+        }
+
+        list.sort((o1, o2) -> (o1 + o2).compareTo(o2 + o1));
+
+        StringBuilder re = new StringBuilder();
+        for(String str : list){
+            re.append(str);
+        }
+        return re.toString();
+    }
+
+    //44
+    public int findNthDigit(int n) {
+        if(n < 10)
+            return n;
+
+        int num = 9;
+        int weight = 2;
+        int base = 90;
+
+        while(weight < Integer.MAX_VALUE / base && weight * base < Integer.MAX_VALUE - num && num + weight * base < n){
+            num += weight * base;
+            weight++;
+            base *= 10;
+        }
+
+        int offset = (n - num) % weight;
+        int realNum = (int) Math.pow(10, weight - 1) - 1 + (n - num) / weight;
+        if(offset == 0){
+            return  String.valueOf(realNum).charAt(weight - 1) - '0';
+        }
+        else{
+            realNum++;
+            return String.valueOf(realNum).charAt(offset - 1) - '0';
+        }
     }
 
     //43
-//    public int countDigitOne(int n) {
-//        int weight = 0;
-//        while()
-//    }
+    public int countDigitOne(int n){
+        Map<Integer, Integer> map = new HashMap<>();
+        return countDigitOne(n, map);
+    }
+
+    private int countDigitOne(int n, Map<Integer, Integer> map) {
+        if(n < 10){
+            if(n >= 1)
+                return 1;
+            else
+                return 0;
+        }
+        if(map.containsKey(n)){
+            return map.get(n);
+        }
+
+        String s = String.valueOf(n);
+        int weight = s.length() - 1;
+        int high = s.charAt(0) - '0';
+        int remain = Integer.parseInt(s.substring(1));
+
+        int weightKey = (int) Math.pow(10, weight) - 1;
+
+        int extra;
+        if(high > 1){
+            extra = weightKey + 1;
+        }
+        else if(high == 1){
+            extra = remain + 1;
+        }
+        else{
+            extra = 0;
+        }
+
+        int weightValue;
+        if(map.containsKey(weight)){
+            weightValue = map.get(weight);
+        }
+        else{
+            weightValue = countDigitOne(weightKey, map);
+            map.put(weightKey, weightValue);
+        }
+
+        return weightValue * high + extra + countDigitOne(remain, map);
+    }
 
     //42
     public int maxSubArray(int[] nums) {
