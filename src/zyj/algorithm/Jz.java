@@ -12,6 +12,181 @@ import java.util.*;
 
 public class Jz {
 
+//    //53 - I
+//    public int search(int[] nums, int target) {
+//        if(nums.length == 0){
+//            return 0;
+//        }
+//
+//        int left = 0;
+//        int right = nums.length - 1;
+//        while(left <= right){
+//            int mid = left + (right - left) / 2;
+//
+//        }
+//    }
+
+    //52
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null){
+            return null;
+        }
+
+        int lengthA = 0;
+        for(ListNode p = headA; p != null; p = p.next){
+            lengthA++;
+        }
+
+        int lengthB = 0;
+        for(ListNode p = headB; p != null; p = p.next){
+            lengthB++;
+        }
+
+        if(lengthA > lengthB){
+            ListNode temp = headA;
+            headA = headB;
+            headB = temp;
+        }
+
+        for (int i = 0; i < Math.abs(lengthB - lengthA); i++) {
+            headB = headB.next;
+        }
+
+        while(headA != null && headB != null){
+            if(headA == headB){
+                return headA;
+            }
+            headA = headA.next;
+            headB = headB.next;
+        }
+
+        return null;
+    }
+
+    //51
+    public int reversePairs2(int[] nums) {
+        if(nums.length == 0)
+            return 0;
+        return reversePairs2(nums, 0, nums.length - 1);
+    }
+
+    private int reversePairs2(int[] nums, int left, int right){
+        if(left == right){
+            return 0;
+        }
+        if(left + 1 == right){
+            if(nums[left] <= nums[right]){
+                return 0;
+            }
+            else{
+                int temp = nums[left];
+                nums[left] = nums[right];
+                nums[right] = temp;
+                return 1;
+            }
+        }
+
+        int count = 0;
+        int mid = left + (right - left) / 2;
+        count += reversePairs2(nums, left, mid);
+        count += reversePairs2(nums, mid + 1, right);
+
+        int leftPoint = left;
+        int rightPoint = mid + 1;
+        int[] array = new int[right - left + 1];
+        for (int i = 0; i < array.length; i++) {
+            if(leftPoint == mid + 1){
+                System.arraycopy(nums, rightPoint, array, i, array.length - i);
+                break;
+            }
+            if(rightPoint == right + 1){
+                System.arraycopy(nums, leftPoint, array, i, array.length - i);
+                break;
+            }
+            if(nums[leftPoint] <= nums[rightPoint]){
+                array[i] = nums[leftPoint];
+                leftPoint++;
+            }
+            else{
+                array[i] = nums[rightPoint];
+                rightPoint++;
+                count += mid - leftPoint + 1;
+            }
+        }
+        System.arraycopy(array, 0, nums, left, array.length);
+        return count;
+    }
+
+    //51
+    //timeout
+    public int reversePairs(int[] nums) {
+        int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < nums.length - i - 1; j++) {
+                if(nums[j] > nums[j + 1]){
+                    int temp = nums[j];
+                    nums[j] = nums[j + 1];
+                    nums[j + 1] = temp;
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    //50
+    public char firstUniqChar(String s) {
+        if(s.length() == 0){
+            return ' ';
+        }
+
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if(map.get(c) == 1){
+                return c;
+            }
+        }
+        return ' ';
+    }
+
+    //49
+    public int nthUglyNumber(int n) {
+        if(n == 1){
+            return 1;
+        }
+
+        int[] array = new int[n];
+        array[0] = 1;
+
+        int point2 = 0;
+        int point3 = 0;
+        int point5 = 0;
+        for (int i = 1; i < n; i++) {
+            int temp2 = array[point2] * 2;
+            int temp3 = array[point3] * 3;
+            int temp5 = array[point5] * 5;
+            array[i] = Math.min(Math.min(temp2, temp3), temp5);
+            if(temp2 == array[i]){
+                point2++;
+            }
+            if(temp3 == array[i]){
+                point3++;
+            }
+            if(temp5 == array[i]){
+                point5++;
+            }
+        }
+
+        return array[n - 1];
+    }
+
     //46
     public int translateNum(int num) {
         if(num < 10){
