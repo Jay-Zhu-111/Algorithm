@@ -10,8 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Test {
 
     public static void main(String[] args) throws IOException {
-        int num = 8;
-        num %= 3;
-        System.out.println(num);
+        LinkedList<Integer> list = new LinkedList<>();
+
     }
 }
