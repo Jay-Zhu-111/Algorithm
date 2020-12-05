@@ -1,6 +1,6 @@
 package zyj;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import utils.MinHeap;
 
 public class minHeapTest {
