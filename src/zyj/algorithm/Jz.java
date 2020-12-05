@@ -12,6 +12,48 @@ import java.util.*;
 
 public class Jz {
 
+    //68 - II
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        if(root == null || root == p || root == q) return root;
+        TreeNode left = lowestCommonAncestor2(root.left, p, q);
+        TreeNode right = lowestCommonAncestor2(root.right, p, q);
+        if(left == null) return right;
+        if(right == null) return left;
+        return root;
+    }
+
+    //68 - II
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root == null){
+            return null;
+        }
+        if(root.val == p.val || root.val == q.val){
+            return root;
+        }
+
+        boolean containsP = containNode(root.left, p);
+        boolean containsQ = containNode(root.left, q);
+        if(containsP && containsQ){
+            return lowestCommonAncestor(root.left, p, q);
+        }
+        else if((containsP && !containsQ) || (!containsP && containsQ)){
+            return root;
+        }
+        else{
+            return lowestCommonAncestor(root.right, p, q);
+        }
+    }
+
+    private boolean containNode(TreeNode root, TreeNode target){
+        if(root == null){
+            return false;
+        }
+        if(root.val == target.val){
+            return true;
+        }
+        return containNode(root.left, target) || containNode(root.right, target);
+    }
+
     //44
     public int findNthDigit(int n) {
         if(n < 10){
