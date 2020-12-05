@@ -1,6 +1,6 @@
 package zyj;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import zyj.algorithm.Lee;
 
 import java.util.Arrays;
