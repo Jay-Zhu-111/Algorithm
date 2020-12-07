@@ -215,6 +215,32 @@ public class Jz {
         return array[n - 1];
     }
 
+    //48
+    public int lengthOfLongestSubstring(String s) {
+        if(s.length() <= 1){
+            return s.length();
+        }
+
+        int[] dp = new int[s.length() + 1];
+        dp[s.length()] = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        for(int i = s.length() - 1; i >= 0; i--){
+            char c = s.charAt(i);
+            if(map.containsKey(c)){
+                dp[i] = Math.min(dp[i + 1] + 1, map.get(c) - i);
+            }
+            else{
+                dp[i] = dp[i + 1] + 1;
+            }
+            map.put(c, i);
+        }
+        int max = 0;
+        for (int i : dp) {
+            max = Math.max(max, i);
+        }
+        return max;
+    }
+
     //46
     public int translateNum(int num) {
         if(num < 10){
