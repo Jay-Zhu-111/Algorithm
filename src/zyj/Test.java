@@ -17,8 +17,91 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        String s = "0000";
-        System.out.println(-1 % 4);
+        int[] array = new int[]{2,7,5,3,6,6,3,1,8,7};
+        System.out.println(Arrays.toString(topK(array, 5)));
+    }
+
+    //TOP-K
+    public static int[] topK(int[] array, int k){
+        if(k <= 0){
+            return new int[0];
+        }
+        if(k >= array.length){
+            return array;
+        }
+
+        Queue<Integer> queue = new PriorityQueue<>(k);
+        for (int i = 0; i < k; i++) {
+            queue.offer(array[i]);
+        }
+
+        for (int i = k; i < array.length; i++) {
+            assert queue.peek() != null;
+            if(queue.peek() < array[i]){
+                queue.poll();
+                queue.offer(array[i]);
+            }
+        }
+
+        int[] re = new int[k];
+        for (int i = k - 1; i >= 0; i--) {
+            assert queue.peek() != null;
+            re[i] = queue.poll();
+        }
+
+        return re;
+    }
+
+    //752 doubleBFS
+    public int openLock2(String[] deadends, String target){
+        if(target.equals("0000")){
+            return 0;
+        }
+
+        int count = 0;
+
+        Set<String> visited = new HashSet<>();
+        Collections.addAll(visited, deadends);
+        if(visited.contains("0000")){
+            return -1;
+        }
+        visited.add("0000");
+        visited.add(target);
+
+        Set<String> source = new HashSet<>();
+        source.add("0000");
+
+        Set<String> end = new HashSet<>();
+        end.add(target);
+
+        while(!source.isEmpty()){
+            Set<String> temp = new HashSet<>();
+            for(String s : source){
+                for (int i = 0; i < 4; i++) {
+                    String up = s.substring(0, i) + ((s.charAt(i) - '0' + 1) % 10) + s.substring(i + 1);
+                    if(end.contains(up)){
+                        return count + 1;
+                    }
+                    if(!visited.contains(up)){
+                        temp.add(up);
+                        visited.add(up);
+                    }
+
+                    String down = s.substring(0, i) + ((s.charAt(i) - '0' + 9) % 10) + s.substring(i + 1);
+                    if(end.contains(down)){
+                        return count + 1;
+                    }
+                    if(!visited.contains(down)){
+                        temp.add(down);
+                        visited.add(down);
+                    }
+                }
+            }
+            source = end;
+            end = temp;
+            count++;
+        }
+        return -1;
     }
 
     //752 BFS
@@ -30,8 +113,11 @@ public class Test {
         int count = 0;
 
         Set<String> visited = new HashSet<>();
-        visited.add("0000");
         Collections.addAll(visited, deadends);
+        if(visited.contains("0000")){
+            return -1;
+        }
+        visited.add("0000");
 
         Queue<String> queue = new LinkedList<>();
         queue.offer("0000");
@@ -44,12 +130,12 @@ public class Test {
                     return count;
                 }
                 for (int j = 0; j < 4; j++) {
-                    String up = cur.substring(0, j) + (cur.charAt(j) + 1) % 4 + cur.substring(j + 1);
+                    String up = cur.substring(0, j) + ((cur.charAt(j) - '0' + 1) % 10) + cur.substring(j + 1);
                     if(!visited.contains(up)){
                         queue.offer(up);
                         visited.add(up);
                     }
-                    String down = cur.substring(0, j) + (cur.charAt(j) + 3) % 4 + cur.substring(j + 1);
+                    String down = cur.substring(0, j) + ((cur.charAt(j) - '0' + 9) % 10) + cur.substring(j + 1);
                     if(!visited.contains(down)){
                         queue.offer(down);
                         visited.add(down);
