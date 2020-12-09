@@ -54,6 +54,154 @@ public class Jz {
         return containNode(root.left, target) || containNode(root.right, target);
     }
 
+    //55 - II
+    public boolean isBalanced2(TreeNode root){
+        if(root == null){
+            return true;
+        }
+        return isBalanced_Depth(root) != -1;
+    }
+
+    private int isBalanced_Depth(TreeNode root){
+        if(root == null){
+            return 0;
+        }
+        int left = isBalanced_Depth(root.left);
+        int right = isBalanced_Depth(root.right);
+        if(left == -1 || right == -1 || Math.abs(left - right) > 1){
+            return -1;
+        }
+        return Math.max(left, right) + 1;
+    }
+
+    //55 - II
+    public boolean isBalanced(TreeNode root) {
+        if(root == null){
+            return true;
+        }
+
+        return isBalanced(root.left) && isBalanced(root.right) && Math.abs(maxDepth2(root.left) - maxDepth2(root.right)) <= 1;
+    }
+
+    //55 - I
+    public int maxDepth2(TreeNode root) {
+        if(root == null){
+            return 0;
+        }
+
+        return Math.max(maxDepth2(root.left), maxDepth2(root.right)) + 1;
+    }
+
+    //55 - I
+    public int maxDepth(TreeNode root) {
+        if(root == null){
+            return 0;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        int count = 0;
+        while(!queue.isEmpty()){
+            count++;
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue.poll();
+                assert cur != null;
+                if(cur.left != null){
+                    queue.offer(cur.left);
+                }
+                if(cur.right != null){
+                    queue.offer(cur.right);
+                }
+            }
+        }
+        return count;
+    }
+
+    //54
+    public int kthLargest(TreeNode root, int k) {
+        int count = 0;
+        Stack<TreeNode> stack = new Stack<>();
+        while(root != null || !stack.isEmpty()){
+            while(root != null){
+                stack.push(root);
+                root = root.right;
+            }
+            if(!stack.isEmpty()){
+                root = stack.pop();
+                count++;
+                if(count == k){
+                    return root.val;
+                }
+                root = root.left;
+            }
+        }
+        throw new RuntimeException("can't find");
+    }
+
+    //53 - II
+    public int missingNumber(int[] nums) {
+        if(nums[nums.length - 1] == nums.length - 1){
+            return nums.length;
+        }
+        if(nums[0] == 1){
+            return 0;
+        }
+
+        int left = 0;
+        int right = nums.length - 1;
+        while(left <= right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] > mid){
+                right = mid - 1;
+            }
+            else if(nums[mid] == mid){
+                left = mid + 1;
+            }
+        }
+        return right + 1;
+    }
+
+    //53 - I
+    public int search(int[] nums, int target) {
+        if(nums.length == 0){
+            return 0;
+        }
+
+        int left = 0;
+        int right = nums.length - 1;
+        while(left <= right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] < target){
+                left = mid + 1;
+            }
+            else{
+                right = mid - 1;
+            }
+        }
+        int firstIndex;
+        if(left < nums.length && nums[left] == target){
+            firstIndex = left;
+        }
+        else{
+            return 0;
+        }
+
+        right = nums.length - 1;
+        while(left <= right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] > target){
+                right = mid - 1;
+            }
+            else{
+                left = mid + 1;
+            }
+        }
+
+        return right - firstIndex + 1;
+    }
+
+
     //52
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
         if(headA == null || headB == null){
@@ -185,7 +333,7 @@ public class Jz {
     }
 
     //49
-    public int nthUglyNumber2(int n) {
+    public int nthUglyNumber(int n) {
         if(n == 1){
             return 1;
         }
@@ -213,32 +361,6 @@ public class Jz {
         }
 
         return array[n - 1];
-    }
-
-    //48
-    public int lengthOfLongestSubstring(String s) {
-        if(s.length() <= 1){
-            return s.length();
-        }
-
-        int[] dp = new int[s.length() + 1];
-        dp[s.length()] = 0;
-        Map<Character, Integer> map = new HashMap<>();
-        for(int i = s.length() - 1; i >= 0; i--){
-            char c = s.charAt(i);
-            if(map.containsKey(c)){
-                dp[i] = Math.min(dp[i + 1] + 1, map.get(c) - i);
-            }
-            else{
-                dp[i] = dp[i + 1] + 1;
-            }
-            map.put(c, i);
-        }
-        int max = 0;
-        for (int i : dp) {
-            max = Math.max(max, i);
-        }
-        return max;
     }
 
     //46
@@ -285,45 +407,76 @@ public class Jz {
 
     //44
     public int findNthDigit(int n) {
-        if(n < 10){
+        if(n < 10)
             return n;
+
+        int num = 9;
+        int weight = 2;
+        int base = 90;
+
+        while(weight < Integer.MAX_VALUE / base && weight * base < Integer.MAX_VALUE - num && num + weight * base < n){
+            num += weight * base;
+            weight++;
+            base *= 10;
         }
 
-        List<Integer> list = new LinkedList<>();
-        int count = 10;
-        list.add(count);
-
-        int base = 2;
-        int num = 90;
-        while(base * num <= Integer.MAX_VALUE - count){
-            count += base * num;
-            list.add(count);
-            base++;
-            num *= 10;
+        int offset = (n - num) % weight;
+        int realNum = (int) Math.pow(10, weight - 1) - 1 + (n - num) / weight;
+        if(offset == 0){
+            return  String.valueOf(realNum).charAt(weight - 1) - '0';
         }
-
-        int index = list.size();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) > n) {
-                index = i;
-                break;
-            }
+        else{
+            realNum++;
+            return String.valueOf(realNum).charAt(offset - 1) - '0';
         }
-        int remain = n - list.get(index - 1);
-        int real_num = (int)Math.pow(10, index) + (remain / (index + 1));
-        int num_index = remain % (index + 1);
-        System.out.println(list);
-        System.out.println("remain  " + remain);
-        System.out.println("real_num  " + real_num);
-        System.out.println("num_index" + num_index);
-        return String.valueOf(real_num).charAt(num_index) - '0';
     }
 
     //43
-//    public int countDigitOne(int n) {
-//        int weight = 0;
-//        while()
-//    }
+    public int countDigitOne(int n){
+        Map<Integer, Integer> map = new HashMap<>();
+        return countDigitOne(n, map);
+    }
+
+    private int countDigitOne(int n, Map<Integer, Integer> map) {
+        if(n < 10){
+            if(n >= 1)
+                return 1;
+            else
+                return 0;
+        }
+        if(map.containsKey(n)){
+            return map.get(n);
+        }
+
+        String s = String.valueOf(n);
+        int weight = s.length() - 1;
+        int high = s.charAt(0) - '0';
+        int remain = Integer.parseInt(s.substring(1));
+
+        int weightKey = (int) Math.pow(10, weight) - 1;
+
+        int extra;
+        if(high > 1){
+            extra = weightKey + 1;
+        }
+        else if(high == 1){
+            extra = remain + 1;
+        }
+        else{
+            extra = 0;
+        }
+
+        int weightValue;
+        if(map.containsKey(weight)){
+            weightValue = map.get(weight);
+        }
+        else{
+            weightValue = countDigitOne(weightKey, map);
+            map.put(weightKey, weightValue);
+        }
+
+        return weightValue * high + extra + countDigitOne(remain, map);
+    }
 
     //42
     public int maxSubArray(int[] nums) {
@@ -1735,6 +1888,7 @@ public class Jz {
     }
 
     //8 CQueue
+
 
     //7
     public TreeNode buildTree(int[] preorder, int[] inorder) {

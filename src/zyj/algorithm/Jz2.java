@@ -5,13 +5,13 @@ import utils.ListNode;
 import utils.TreeNode;
 
 import javax.imageio.stream.IIOByteBuffer;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import javax.management.NotCompliantMBeanException;
+import java.util.*;
 
 public class Jz2 {
 
     //7   preLeft > preorder.length 以及 preleft边界问题
+    //11  不一样的二分，跟numbers[right]比
     //29
 
     //3
@@ -208,29 +208,154 @@ public class Jz2 {
             return numbers[0];
         }
 
-        int temp = numbers[0];
-        int left = 1;
+        int left = 0;
         int right = numbers.length - 1;
         while(left < right){
             int mid = left + (right - left) / 2;
-            if(numbers[mid] > temp){
-                left = mid + 1;
-            }
-            else if(numbers[mid] < temp){
+            if(numbers[mid] < numbers[right]){
                 right = mid;
             }
+            else if(numbers[mid] > numbers[right]){
+                left = mid + 1;
+            }
             else{
-               left++;
+                right--;
+            }
+        }
+        return numbers[right];
+    }
+
+    //12
+    public boolean exist(char[][] board, String word) {
+        if(word.length() == 0){
+            return true;
+        }
+
+        int n = board.length;
+        int m = board[0].length;
+        boolean[][] state = new boolean[n][m];
+        for (int i = 0; i < n; i++) {
+            state[i] = new boolean[m];
+            Arrays.fill(state[i], true);
+        }
+
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(board[i][j] == word.charAt(0)){
+                    state[i][j] = false;
+                    if(exist(board, word.substring(1), i, j, state)){
+                        return true;
+                    }
+                    state[i][j] = true;
+                }
             }
         }
 
-        if(left < numbers.length){
-            return numbers[left];
-        }
-        else{
-            return numbers[0];
-        }
+        return false;
     }
+
+    private boolean exist(char[][] board, String word, int row, int col, boolean[][] state){
+        if(word.length() == 0){
+            return true;
+        }
+
+        int[][] adds = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        for (int[] add : adds) {
+            row += add[0];
+            col += add[1];
+            if(row >= board.length || row < 0 || col >= board[0].length || col < 0){
+                row -= add[0];
+                col -= add[1];
+                continue;
+            }
+
+            if(state[row][col] && board[row][col] == word.charAt(0)){
+                state[row][col] = false;
+                if(exist(board, word.substring(1), row, col, state)){
+                    return true;
+                }
+                state[row][col] = true;
+            }
+
+            row -= add[0];
+            col -= add[1];
+        }
+        return false;
+    }
+
+    //13
+    public int movingCount(int m, int n, int k) {
+        if(k == 0){
+            return 1;
+        }
+
+        int row = 0;
+        int col = 0;
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            visited[i] = new boolean[n];
+            Arrays.fill(visited[i], false);
+        }
+
+        int count = 1;
+        visited[0][0] = true;
+        count += movingCount(0, 0, k, visited);
+        return count;
+    }
+
+    private int movingCount(int row, int col, int k, boolean[][] visited){
+        int count = 0;
+        int[][] adds = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int m = visited.length;
+        int n = visited[0].length;
+        for(int[] add : adds){
+            row += add[0];
+            col += add[1];
+            if(row >= m || row < 0 || col >= n || col < 0 || !isValid(row, col, k) || visited[row][col]){
+                row -= add[0];
+                col -= add[1];
+                continue;
+            }
+
+            count++;
+            visited[row][col] = true;
+            count += movingCount(row, col, k, visited);
+
+            row -= add[0];
+            col -= add[1];
+        }
+        return count;
+    }
+
+    private boolean isValid(int row, int col, int k){
+        int count = 0;
+        while(row > 0){
+            count += row % 10;
+            row /= 10;
+        }
+        while(col > 0){
+            count += col % 10;
+            col /= 10;
+        }
+        return count <= k;
+    }
+
+    //14 - I
+    public int cuttingRope(int n) {
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+        dp[2] = 1;
+        for (int i = 3; i <= n; i++) {
+            int max = 0;
+            for (int j = 1; j < i; j++) {
+                max = Math.max(max, Math.max(j, dp[j]) * Math.max(i - j, dp[i - j]));
+            }
+            dp[i] = max;
+        }
+        System.out.println(Arrays.toString(dp));
+        return dp[n];
+    }
+
 
     //29
     public int[] spiralOrder(int[][] matrix) {

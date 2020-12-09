@@ -36,4 +36,25 @@ class jz2Test {
     @Test
     void spiralOrder() {
     }
+
+    @Test
+    void numWays() {
+    }
+
+    @Test
+    void minArray() {
+    }
+
+    @Test
+    void exist() {
+    }
+
+    @Test
+    void movingCount() {
+    }
+
+    @Test
+    void cuttingRope() {
+        System.out.println(main.cuttingRope(10));
+    }
 }

@@ -390,4 +390,40 @@ public class jzTest {
     public void permutation() {
     }
 
+    @Test
+    public void search() {
+        System.out.println(main.search(new int[]{5,7,7,8,8,10}, 8));
+    }
+
+    @Test
+    public void getIntersectionNode() {
+    }
+
+    @Test
+    public void reversePairs2() {
+    }
+
+    @Test
+    public void reversePairs() {
+    }
+
+    @Test
+    public void firstUniqChar() {
+    }
+
+    @Test
+    public void nthUglyNumber() {
+    }
+
+    @Test
+    public void translateNum() {
+    }
+
+    @Test
+    public void minNumber() {
+    }
+
+    @Test
+    public void countDigitOne() {
+    }
 }
