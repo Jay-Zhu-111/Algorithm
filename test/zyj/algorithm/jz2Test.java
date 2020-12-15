@@ -57,4 +57,65 @@ class jz2Test {
     void cuttingRope() {
         System.out.println(main.cuttingRope(10));
     }
+
+    @Test
+    void cuttingRopeII() {
+    }
+
+    @Test
+    void multiMod() {
+    }
+
+    @Test
+    void myPow() {
+    }
+
+    @Test
+    void printNumbers() {
+    }
+
+    @Test
+    void deleteNode() {
+    }
+
+    @Test
+    void isMatch() {
+    }
+
+    @Test
+    void isNumber() {
+    }
+
+    @Test
+    void exchange() {
+    }
+
+    @Test
+    void getKthFromEnd() {
+    }
+
+    @Test
+    void reverseList2() {
+    }
+
+    @Test
+    void mergeTwoLists() {
+    }
+
+    @Test
+    void isSubStructure() {
+    }
+
+    @Test
+    void mirrorTree() {
+    }
+
+    @Test
+    void isSymmetric() {
+    }
+
+    @Test
+    void validateStackSequences() {
+        System.out.println(main.validateStackSequences(new int[]{1,2,3,4,5}, new int[]{4,5,3,2,1}));
+    }
 }

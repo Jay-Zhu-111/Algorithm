@@ -3,6 +3,7 @@ package zyj;
 import domain.Good;
 import utils.Create;
 import utils.TreeNode;
+import zyj.algorithm.Jz2;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -17,8 +18,29 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int[] array = new int[]{2,7,5,3,6,6,3,1,8,7};
-        System.out.println(Arrays.toString(topK(array, 5)));
+        System.out.println(hammingWeight(-3));
+    }
+
+    public static int hammingWeight(int n) {
+        int res = 0;
+        while(n != 0) {
+            res += n & 1;
+            n >>>= 1;
+        }
+        return res;
+    }
+
+    //快速幂
+    public static int quickMod(int a, int b, int c){
+        int re = 1;
+        while(b > 0){
+            if(b % 2 == 1){
+                re = (re * a) % c;
+            }
+            b /= 2;
+            a = (a * a) % c;
+        }
+        return re;
     }
 
     //TOP-K

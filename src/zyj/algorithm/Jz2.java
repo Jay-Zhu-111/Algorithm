@@ -6,12 +6,19 @@ import utils.TreeNode;
 
 import javax.imageio.stream.IIOByteBuffer;
 import javax.management.NotCompliantMBeanException;
+import java.security.Key;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class Jz2 {
 
     //7   preLeft > preorder.length 以及 preleft边界问题
     //11  不一样的二分，跟numbers[right]比
+    //14  循环超时，可快速幂
+    //15  位运算
+    //16  快速幂
+    //18  可能删除的是头节点
+    //20  ".1"和"1."是数，"."不是数
     //29
 
     //3
@@ -356,6 +363,405 @@ public class Jz2 {
         return dp[n];
     }
 
+    //14 - II
+    public int cuttingRopeII(int n) {
+        int[] dp = new int[n + 1];
+        int mod = (int) Math.pow(10, 9) + 7;
+        dp[1] = 1;
+        dp[2] = 1;
+        for (int i = 3; i <= n; i++) {
+            int max = 0;
+            for (int j = 1; j < i; j++) {
+                max = Math.max(max, multiMod(Math.max(dp[j], j), Math.max(dp[i - j], i - j), mod));
+            }
+            dp[i] = max;
+        }
+        return dp[n];
+    }
+
+    public static int multiMod(int num1, int num2, int mod){
+        if(num2 > num1){
+            return multiMod(num2, num1, mod);
+        }
+
+        int re = num1;
+        for (int i = 0; i < num2 - 1; i++) {
+            re = (re + num1) % mod;
+        }
+
+        return re;
+    }
+
+    //16
+    public double myPow(double x, int n) {
+        if(x == 0){
+            return 0;
+        }
+
+        long b = n;
+        double re = 1d;
+        if(n < 0){
+            x = 1 / x;
+            b = -b;
+        }
+
+        while(b > 0){
+            if((b & 1) == 1){
+                re *= x;
+            }
+            x *= x;
+            b >>= 1;
+        }
+        return re;
+    }
+
+    //17
+    public int[] printNumbers(int n) {
+        int limit = (int) Math.pow(10, n);
+        int[] re = new int[limit - 1];
+        for (int i = 1; i < limit; i++) {
+            re[i - 1] = i;
+        }
+        return re;
+    }
+
+    //18
+    public ListNode deleteNode(ListNode head, int val) {
+        if(head == null){
+            return null;
+        }
+        if(head.val == val){
+            return head.next;
+        }
+
+        ListNode pre = head;
+        ListNode p = head.next;
+        while(p != null){
+            if(p.val == val){
+                pre.next = p.next;
+                return head;
+            }
+            pre = p;
+            p = p.next;
+        }
+        return head;
+    }
+
+    //19
+    public boolean isMatch(String s, String p){
+        Map<String, Boolean> map = new HashMap<>();
+        return isMatch(s, p, map);
+    }
+
+    private boolean isMatch(String s, String p, Map<String, Boolean> map) {
+        String keyStr = s + ',' + p;
+        if(map.containsKey(keyStr)){
+            return map.get(keyStr);
+        }
+
+        boolean re;
+        if(s.length() == 0){
+            re = isMatchNull(p);
+            map.put(keyStr, re);
+            return re;
+        }
+        if(p.length() == 0){
+            re = false;
+            map.put(keyStr, re);
+            return re;
+        }
+        if(!isValid(p)){
+            re = false;
+            map.put(keyStr, re);
+            return re;
+        }
+
+        if(s.charAt(0) == p.charAt(0) || p.charAt(0) == '.'){
+            if(p.length() > 1 && p.charAt(1) == '*'){
+                re = isMatch(s.substring(1), p, map) || isMatch(s, p.substring(2), map);
+            }
+            else{
+                re = isMatch(s.substring(1), p.substring(1), map);
+            }
+        }
+        else{
+            if(p.length() > 1 && p.charAt(1) == '*'){
+                re = isMatch(s, p.substring(2), map);
+            }
+            else{
+                re = false;
+            }
+        }
+        map.put(keyStr, re);
+        return re;
+    }
+
+    private boolean isValid(String p){
+        if(p.length() == 0){
+            return true;
+        }
+        return p.charAt(0) != '*';
+    }
+
+    private boolean isMatchNull(String p){
+        if(p.length() == 0){
+            return true;
+        }
+        if(!isValid(p)){
+            return false;
+        }
+        if((p.length() & 1) == 0){
+            for (int i = 1; i < p.length(); i += 2) {
+                if(p.charAt(i) != '*'){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    //20
+    public boolean isNumber(String s) {
+        if(s.length() == 0){
+            return false;
+        }
+        s = s.strip();
+
+        int eIndex = containE(s);
+        if(eIndex == -1){
+            s = removeSign(s);
+            return isNumberAll(s);
+        }
+        else{
+            String before = s.substring(0, eIndex);
+            before = removeSign(before);
+
+            String after = s.substring(eIndex + 1);
+            after = removeSign(after);
+
+            return isNumberAll(before) && isNumberPure(after);
+        }
+    }
+
+    private String removeSign(String s){
+        if(s.length() == 0){
+            return s;
+        }
+        if(s.charAt(0) == '+' || s.charAt(0) == '-'){
+            return s.substring(1);
+        }
+        return s;
+    }
+
+    private boolean isNumberAll(String s){
+        return isNumberPure(s) || isDecimal(s);
+    }
+
+    private boolean isNumberPure(String s){
+        if(s.length() == 0){
+            return false;
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            if(!(s.charAt(i) >= '0' && s.charAt(i) <= '9')){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isDecimal(String s){
+        if(s.length() == 0){
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if(s.charAt(i) == '.'){
+                String before = s.substring(0, i);
+                String after = s.substring(i + 1);
+                if(before.length() == 0 && after.length() == 0){
+                    return false;
+                }
+                if(before.length() == 0){
+                    return isNumberPure(after);
+                }
+                if(after.length() == 0){
+                    return isNumberPure(before);
+                }
+                return isNumberPure(before) && isNumberPure(after);
+            }
+        }
+        return false;
+    }
+
+    private int containE(String s){
+        for (int i = 0; i < s.length(); i++) {
+            if(s.charAt(i) == 'e' || s.charAt(i) == 'E'){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    //21
+    public int[] exchange(int[] nums) {
+        if(nums.length < 2){
+            return nums;
+        }
+
+        int left = 0;
+        int right = nums.length - 1;
+        int temp = nums[0];
+        while(left < right){
+            while(left < right){
+                if((nums[right] & 1) == 1){
+                    nums[left] = nums[right];
+                    left++;
+                    break;
+                }
+                right--;
+            }
+            while(left < right){
+                if((nums[left] & 1) == 0){
+                    nums[right] = nums[left];
+                    right--;
+                    break;
+                }
+                left++;
+            }
+        }
+        nums[left] = temp;
+        return nums;
+    }
+
+    //22
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        ListNode p = head;
+        for (int i = 0; i < k; i++) {
+            if(p == null){
+                return null;
+            }
+            p = p.next;
+        }
+        while(p != null){
+            head = head.next;
+            p = p.next;
+        }
+        return head;
+    }
+
+    //24
+    public ListNode reverseList2(ListNode head) {
+        if(head == null){
+            return null;
+        }
+
+        ListNode pre = null;
+        while(head != null){
+            ListNode temp = head.next;
+            head.next = pre;
+            pre = head;
+            head = temp;
+        }
+        return pre;
+    }
+
+    //25
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1 == null){
+            return l2;
+        }
+        if(l2 == null){
+            return l1;
+        }
+
+        ListNode head = new ListNode(0);
+        ListNode p = head;
+        while(l1 != null && l2 != null){
+            if(l1.val <= l2.val){
+                p.next = l1;
+                l1 = l1.next;
+            }
+            else{
+                p.next = l2;
+                l2 = l2.next;
+            }
+            p = p.next;
+        }
+
+        p.next = mergeTwoLists(l1, l2);
+        return head.next;
+    }
+
+    //26
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        if(A == null || B == null){
+            return false;
+        }
+
+        Stack<TreeNode> stack = new Stack<>();
+        while(A != null || !stack.isEmpty()){
+            while(A != null){
+                stack.push(A);
+                if(isSubStructure_fixHead(A, B)){
+                    return true;
+                }
+                A = A.left;
+            }
+            if(!stack.isEmpty()){
+                A = stack.pop();
+                A = A.right;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isSubStructure_fixHead(TreeNode A, TreeNode B){
+        if(B == null){
+            return true;
+        }
+        if(A == null || A.val != B.val){
+            return false;
+        }
+        return isSubStructure_fixHead(A.left, B.left) && isSubStructure_fixHead(A.right, B.right);
+    }
+
+    //27
+    public TreeNode mirrorTree(TreeNode root) {
+        if(root == null){
+            return null;
+        }
+
+        TreeNode temp = root.left;
+        root.left = mirrorTree(root.right);
+        root.right = mirrorTree(temp);
+
+        return root;
+    }
+
+    //28
+    public boolean isSymmetric(TreeNode root) {
+        if(root == null){
+            return true;
+        }
+
+        return isSymmetric(root.left, root.right);
+    }
+
+    private boolean isSymmetric(TreeNode A, TreeNode B){
+        if(A == null && B == null){
+            return true;
+        }
+        if(A == null || B == null){
+            return false;
+        }
+        if(A.val != B.val){
+            return false;
+        }
+
+        return isSymmetric(A.left, B.right) && isSymmetric(A.right, B.left);
+    }
 
     //29
     public int[] spiralOrder(int[][] matrix) {
@@ -412,4 +818,76 @@ public class Jz2 {
         }
         return re;
     }
+
+    //30
+    static class MinStack {
+
+        Stack<Integer> stack;
+        Stack<Integer> minStack;
+
+        /** initialize your data structure here. */
+        public MinStack() {
+            stack = new Stack<>();
+            minStack = new Stack<>();
+        }
+
+        public void push(int x) {
+            stack.push(x);
+            if(minStack.isEmpty() || minStack.peek() >= x){
+                minStack.push(x);
+            }
+        }
+
+        public void pop() {
+            int num = stack.pop();
+            if(!minStack.isEmpty() && minStack.peek() == num){
+                minStack.pop();
+            }
+        }
+
+        public int top() {
+            return stack.peek();
+        }
+
+        public int min() {
+            return minStack.peek();
+        }
+    }
+
+    //31
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        int index = -1;
+        for (int cur : popped) {
+            if (map.containsKey(cur)) {
+                if (index != map.get(cur)) {
+                    return false;
+                } else {
+                    map.put(cur, -1);
+                    while(index >= 0 && map.get(pushed[index]) == -1){
+                        index--;
+                    }
+                }
+            } else {
+                int index_temp = index;
+                index++;
+                while (index < pushed.length && pushed[index] != cur) {
+                    int num = pushed[index];
+                    if (!map.containsKey(num)) {
+                        map.put(num, index);
+                        index_temp = index;
+                    }
+                    index++;
+                }
+                if (index >= pushed.length) {
+                    return false;
+                }
+                map.put(cur, -1);
+                index = index_temp;
+            }
+        }
+        return true;
+    }
+
 }
