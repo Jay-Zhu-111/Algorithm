@@ -1,6 +1,7 @@
 package zyj;
 
 import domain.Good;
+import test.InnerClass;
 import utils.Create;
 import utils.TreeNode;
 import zyj.algorithm.Jz2;
@@ -17,8 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Test {
 
+
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println(hammingWeight(-3));
+
+    }
+
+    public static void f(int[] array){
+        if(array.length == 0){
+            return;
+        }
     }
 
     public static int hammingWeight(int n) {

@@ -1,6 +1,7 @@
 package zyj.algorithm;
 
 import org.junit.jupiter.api.Test;
+import utils.TreeNode;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -117,5 +118,31 @@ class jz2Test {
     @Test
     void validateStackSequences() {
         System.out.println(main.validateStackSequences(new int[]{1,2,3,4,5}, new int[]{4,5,3,2,1}));
+    }
+
+    @Test
+    void validateStackSequences2() {
+    }
+
+    @Test
+    void verifyPostorder() {
+    }
+
+    @Test
+    void pathSum() {
+    }
+
+    @Test
+    void copyRandomList() {
+    }
+
+    @Test
+    void treeToDoublyList() {
+        TreeNode head = new TreeNode(4);
+        head.left = new TreeNode(2);
+        head.right = new TreeNode(5);
+        head.left.left = new TreeNode(1);
+        head.left.right = new TreeNode(3);
+        TreeNode re = main.treeToDoublyList(head);
     }
 }

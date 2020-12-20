@@ -2,6 +2,7 @@ package zyj.algorithm;
 
 import com.sun.jdi.IntegerValue;
 import utils.ListNode;
+import utils.Node;
 import utils.TreeNode;
 
 import javax.imageio.stream.IIOByteBuffer;
@@ -20,6 +21,7 @@ public class Jz2 {
     //18  可能删除的是头节点
     //20  ".1"和"1."是数，"."不是数
     //29
+    //35  建立Node,Node的map，再调整指针关系
 
     //3
     public int findRepeatNumber(int[] nums) {
@@ -857,37 +859,143 @@ public class Jz2 {
     //31
     public boolean validateStackSequences(int[] pushed, int[] popped) {
         Map<Integer, Integer> map = new HashMap<>();
-
-        int index = -1;
-        for (int cur : popped) {
-            if (map.containsKey(cur)) {
-                if (index != map.get(cur)) {
-                    return false;
-                } else {
-                    map.put(cur, -1);
-                    while(index >= 0 && map.get(pushed[index]) == -1){
-                        index--;
-                    }
+        for (int i = 0; i < pushed.length; i++) {
+            map.put(pushed[i], i);
+        }
+        int top = -1;
+        for (int i : popped) {
+            if(map.get(i) >= top){
+                top = map.get(i);
+                map.put(i, -1);
+                while(top >= 0 && map.get(pushed[top]) == -1){
+                    top--;
                 }
-            } else {
-                int index_temp = index;
-                index++;
-                while (index < pushed.length && pushed[index] != cur) {
-                    int num = pushed[index];
-                    if (!map.containsKey(num)) {
-                        map.put(num, index);
-                        index_temp = index;
-                    }
-                    index++;
-                }
-                if (index >= pushed.length) {
-                    return false;
-                }
-                map.put(cur, -1);
-                index = index_temp;
+            }
+            else{
+                return false;
             }
         }
         return true;
     }
 
+    //31
+    public boolean validateStackSequences2(int[] pushed, int[] popped) {
+        Stack<Integer> stack = new Stack<>();
+        int i = 0;
+        for (int num : pushed) {
+            stack.push(num);
+            while(!stack.isEmpty() && stack.peek() == popped[i]){
+                stack.pop();
+                i++;
+            }
+        }
+        return i == popped.length;
+    }
+
+    //33
+    public boolean verifyPostorder(int[] postorder){
+        if(postorder.length <= 1){
+            return true;
+        }
+
+        return verifyPostorder(postorder, 0, postorder.length - 1);
+    }
+
+    private boolean verifyPostorder(int[] postorder, int left, int right) {
+        if(right <= left + 1){
+            return true;
+        }
+
+        int rootVal = postorder[right];
+        int index = 0;
+        while(index < right && postorder[index] < rootVal){
+            index++;
+        }
+        int mid = index - 1;
+        while(index < right && postorder[index] > rootVal){
+            index++;
+        }
+        return index == right && verifyPostorder(postorder, left, mid) && verifyPostorder(postorder, mid + 1, right - 1);
+    }
+
+    //34
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> allPath = new LinkedList<>();
+        if(root == null){
+            return allPath;
+        }
+        List<Integer> path = new LinkedList<>();
+        pathSum(root, sum, allPath, path);
+        return allPath;
+    }
+
+    private void pathSum(TreeNode root, int sum, List<List<Integer>> allPath, List<Integer> path){
+        path.add(root.val);
+        if(root.left == null && root.right == null){
+            if(root.val == sum){
+                allPath.add(new LinkedList<>(path));
+            }
+        }
+        else{
+            if(root.left != null)
+                pathSum(root.left, sum - root.val, allPath, path);
+            if(root.right != null){
+                pathSum(root.right, sum - root.val, allPath, path);
+            }
+        }
+        path.remove(path.size() - 1);
+    }
+
+    //35
+    public Node copyRandomList(Node head) {
+        if(head == null){
+            return null;
+        }
+        Node p = head;
+        Map<Node, Node> map = new HashMap<>();
+        while(p != null){
+            map.put(p, new Node(p.val));
+            p = p.next;
+        }
+        p = head;
+        while(p != null){
+            map.get(p).next = map.get(p.next);
+            map.get(p).random = map.get(p.random);
+            p = p.next;
+        }
+        return map.get(head);
+    }
+
+    //36
+    public TreeNode treeToDoublyList(TreeNode root) {
+        if(root == null){
+            return null;
+        }
+
+        TreeNode head = new TreeNode(0);
+        TreeNode p = head;
+        TreeNode pre = null;
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur;
+        while(root != null || !stack.isEmpty()){
+            while(root != null){
+                stack.push(root);
+                root = root.left;
+            }
+            if(!stack.isEmpty()){
+                cur = stack.pop();
+                root = cur.right;
+
+                p.right = cur;
+                p.left = pre;
+                pre = p;
+                p = cur;
+            }
+        }
+
+        p.left = pre;
+        p.right = head.right;
+        head.right.left = p;
+        return head.right;
+    }
 }
