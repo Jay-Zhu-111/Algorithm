@@ -17,9 +17,13 @@ public class Blocking_queue {
     }
 
     class testA extends Thread{
-        private void function(){
+        private void function() throws InterruptedException {
             lock.lock();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 3; i++) {
+                System.out.println("a");
+            }
+            Thread.sleep(5000);
+            for (int i = 0; i < 3; i++) {
                 System.out.println("a");
             }
             lock.unlock();
@@ -27,7 +31,11 @@ public class Blocking_queue {
 
         @Override
         public void run() {
-            function();
+            try {
+                function();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

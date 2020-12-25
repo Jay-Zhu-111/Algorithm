@@ -18,14 +18,70 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Test {
 
+    long a = 1L;
+    double d = 1d;
+    float f = 1f;
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        System.out.println(findNumRotate(new int[]{1,2,3,4,5,6,7}, 7));
 
     }
 
-    public static void f(int[] array){
-        if(array.length == 0){
-            return;
+    public static int findNumRotate(int[] array, int target){
+        if(array == null || array.length == 0){
+            return -1;
+        }
+
+        int left = 0;
+        int right = array.length - 1;
+        int mid;
+        if(target > array[array.length - 1]){
+            while(left <= right){
+                mid = left + (right - left) / 2;
+                if(array[mid] < target){
+                    if(array[mid] <= array[array.length - 1]){
+                        right = mid - 1;
+                    }
+                    else{
+                        left = mid + 1;
+                    }
+                }
+                else if(array[mid] == target){
+                    return mid;
+                }
+                else{
+                    right = mid - 1;
+                }
+            }
+        }
+        else if(target == array[array.length - 1]){
+            return array.length - 1;
+        }
+        else{
+            while(left <= right){
+                mid = left + (right - left) / 2;
+                if(array[mid] > target){
+                    if(array[mid] <= array[array.length - 1]){
+                        right = mid - 1;
+                    }
+                    else{
+                        left = mid + 1;
+                    }
+                }
+                else if(array[mid] == target){
+                    return mid;
+                }
+                else{
+                    right = mid - 1;
+                }
+            }
+        }
+        if(array[left] == target){
+            return left;
+        }
+        else{
+            return -1;
         }
     }
 
@@ -377,6 +433,9 @@ public class Test {
             }
         }
     }
+
+
+
 
 
 }
