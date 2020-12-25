@@ -1,8 +1,9 @@
 package zyj.algorithm;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+
 
 public class LabuTest {
 

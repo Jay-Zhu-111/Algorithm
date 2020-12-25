@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ReentrantLockTest {
 
-    private static final Lock LOCK = new ReentrantLock();
+    private static final Lock LOCK = new ReentrantLock(true);
 
     public static void main(String[] args) {
         new Thread(ReentrantLockTest::test, "A").start();
@@ -17,11 +17,11 @@ public class ReentrantLockTest {
     }
 
     private static void test(){
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 5; i++) {
             try {
                 LOCK.lock();
                 System.out.println(Thread.currentThread().getName() + "  get LOCK");
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }finally {

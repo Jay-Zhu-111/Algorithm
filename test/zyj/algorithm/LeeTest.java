@@ -1,12 +1,13 @@
 package zyj.algorithm;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+
 
 public class LeeTest {
 
