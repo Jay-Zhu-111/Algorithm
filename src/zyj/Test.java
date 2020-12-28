@@ -24,8 +24,8 @@ public class Test {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println(findNumRotate(new int[]{1,2,3,4,5,6,7}, 7));
-
+        int[] test = new int[]{2,6,7,8,9,10};
+        System.out.println(Arrays.toString(Arrays.stream(test).limit(3).toArray()));
     }
 
     public static int findNumRotate(int[] array, int target){

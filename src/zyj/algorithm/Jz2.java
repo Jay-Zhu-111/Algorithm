@@ -22,6 +22,7 @@ public class Jz2 {
     //20  ".1"和"1."是数，"."不是数
     //29
     //35  建立Node,Node的map，再调整指针关系
+    //37
 
     //3
     public int findRepeatNumber(int[] nums) {
@@ -999,16 +1000,168 @@ public class Jz2 {
         return head.right;
     }
 
-//    public class Codec {
-//
-//        // Encodes a tree to a single string.
-//        public String serialize(TreeNode root) {
-//
-//        }
-//
-//        // Decodes your encoded data to tree.
-//        public TreeNode deserialize(String data) {
-//
-//        }
-//    }
+    //38
+    public class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(TreeNode root) {
+            if(root == null){
+                return "[]";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            Queue<TreeNode> queue = new LinkedList<>();
+            queue.offer(root);
+            while(!queue.isEmpty()){
+                int size = queue.size();
+                for (int i = 0; i < size; i++) {
+                    TreeNode cur = queue.poll();
+                    if(cur == null){
+                        sb.append("null,");
+                    }
+                    else{
+                        queue.offer(cur.left);
+                        queue.offer(cur.right);
+                        sb.append(cur.val).append(",");
+                    }
+                }
+            }
+            sb.replace(sb.length() - 1, sb.length(), "]");
+            return sb.toString();
+        }
+
+        // Decodes your encoded data to tree.
+        public TreeNode deserialize(String data) {
+            if(data == null || data.length() == 0 || data.equals("[]") || data.equals("[null]")){
+                return null;
+            }
+            
+            data = data.substring(1, data.length() - 1);
+            String[] strings = data.split(",");
+            if(strings.length == 0){
+                return null;
+            }
+
+            Map<Integer, TreeNode> map = new HashMap<>();
+            for (int i = 0; i < strings.length; i++) {
+                String s = strings[i];
+                if(s.equals("null")){
+                    map.put(i, null);
+                }
+                else{
+                    map.put(i, new TreeNode(Integer.parseInt(strings[i])));
+                }
+            }
+
+            int countNull = 0;
+            for (int i = 0; i < strings.length; i++) {
+                String s = strings[i];
+                if(s.equals("null")){
+                    countNull++;
+                }
+                else{
+                    TreeNode cur = map.get(i);
+                    cur.left = map.get(2 * (i - countNull) + 1);
+                    cur.right = map.get(2 * (i - countNull) + 2);
+                }
+            }
+            return map.get(0);
+        }
+    }
+
+    //39
+    public int majorityElement(int[] nums) {
+        if(nums == null || nums.length == 0){
+            return 0;
+        }
+
+        int num = nums[0];
+        int count = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if(num == nums[i]){
+                count++;
+            }
+            else{
+                if(count == 0){
+                    num = nums[i];
+                }
+                else{
+                    count--;
+                }
+            }
+        }
+        return num;
+    }
+
+    //40
+    public int[] getLeastNumbers(int[] arr, int k) {
+        if(k == 0 || arr == null || arr.length == 0){
+            return new int[0];
+        }
+        if(k >= arr.length){
+            return arr;
+        }
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        for(int num : arr){
+            queue.offer(num);
+        }
+        int[] re = new int[k];
+        for (int i = 0; i < k; i++) {
+            re[i] = queue.poll();
+        }
+        return re;
+    }
+
+    //40
+    public int[] getLeastNumbers2(int[] arr, int k) {
+        if(k == 0 || arr == null || arr.length == 0){
+            return new int[0];
+        }
+        if(k >= arr.length){
+            return arr;
+        }
+
+        quick_sort_k(arr, 0, arr.length - 1, k);
+        return Arrays.stream(arr).limit(k).toArray();
+    }
+
+    private void quick_sort_k(int[] array, int left, int right, int k){
+        if(array == null || array.length == 0 || left >= right){
+            return;
+        }
+
+        int i = left;
+        int j = right;
+        int temp = array[left];
+        while(i < j){
+            while(i < j){
+                if(array[j] < temp){
+                    array[i] = array[j];
+                    break;
+                }
+                j--;
+            }
+            while(i < j){
+                if(array[i] >= temp){
+                    array[j] = array[i];
+                    break;
+                }
+                i++;
+            }
+        }
+        array[i] = temp;
+
+        if(i > k){
+            quick_sort_k(array, left, i - 1, k);
+        }
+        else if(i == k){
+            return;
+        }
+        else{
+            quick_sort_k(array, i + 1, right, k);
+        }
+    }
+
+
 }
