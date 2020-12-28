@@ -3,13 +3,14 @@ package test;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.function.Consumer;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Consumer_Producer<T> {
 
     public static void main(String[] args) throws InterruptedException {
         Consumer_Producer<Integer> consumer_producer = new Consumer_Producer<>(2, 1, 10);
-        consumer_producer.startThread1();
+        consumer_producer.startThread();
         Thread.sleep(2000);
         consumer_producer.setT(66666666);
         Thread.sleep(2000);
@@ -19,12 +20,14 @@ public class Consumer_Producer<T> {
 
     private volatile boolean flag = true;
     private final Queue<T> queue = new LinkedList<>();
-    private static final int maxSize = 10;
+    private static final int maxSize = 5;
     private volatile T t;
     private int numOfConsumer = 1;
     private int numOfProducer = 1;
-    private final List<Thread> list = new LinkedList<>();
-
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition not_full = lock.newCondition();
+    private final Condition not_empty = lock.newCondition();
+    private final List<Thread> threadList = new LinkedList<>();
 
     public Consumer_Producer(T t){
         this.t = t;
@@ -42,48 +45,23 @@ public class Consumer_Producer<T> {
 
     public void interrupt(){
         flag = false;
-        for (Thread thread : list) {
+        for (Thread thread : threadList) {
             thread.interrupt();
         }
     }
 
     private void startThread(){
-        for (int i = 0; i < numOfProducer; i++) {
-            list.add(new Thread(new Producer()));
-        }
-
         for (int i = 0; i < numOfConsumer; i++) {
-            list.add(new Thread(new Consumer()));
+            threadList.add(new Thread(new Consumer()));
         }
 
-        for (Thread thread : list) {
-            System.out.println(thread.getName() + "  start");
+        for (int i = 0; i < numOfProducer; i++) {
+            threadList.add(new Thread(new Producer()));
+        }
+
+        for(Thread thread : threadList){
             thread.start();
         }
-        System.out.println("start all");
-    }
-
-    private void startThread1(){
-        System.out.println("numOfProducer  :" + numOfProducer);
-        for (int i = 0; i < numOfProducer; i++) {
-            new Thread(new Producer()).start();
-        }
-
-        System.out.println("numOfConsumer  :" + numOfConsumer);
-        for (int i = 0; i < numOfConsumer; i++) {
-            new Thread(new Consumer()).start();
-        }
-    }
-
-    private void startThread2(){
-        new Thread(new Producer()).start();
-//        new Thread(new Producer()).start();
-//        new Thread(new Producer()).start();
-//        new Thread(new Producer()).start();
-//        new Thread(new Producer()).start();
-//        new Thread(new Producer()).start();
-
-        new Thread(new Consumer()).start();
     }
 
     private class Consumer implements Runnable{
@@ -96,16 +74,17 @@ public class Consumer_Producer<T> {
 
         public void consume(){
             try {
-                synchronized (Consumer_Producer.this){
-                    while(queue.isEmpty()){
-                        System.out.println("start wait");
-                        Consumer_Producer.this.wait();
-                    }
-                    System.out.println(queue.poll().toString());
-                    Consumer_Producer.this.notify();
+                lock.lock();
+                while(queue.isEmpty()){
+                    System.out.println("start wait");
+                    not_empty.await();
                 }
+                System.out.println(Thread.currentThread().getName() + " consume:  " + queue.poll().toString());
+                not_full.signal();
             } catch (InterruptedException e){
                 flag = false;
+            } finally {
+                lock.unlock();
             }
         }
     }
@@ -115,27 +94,22 @@ public class Consumer_Producer<T> {
         public void run() {
             while(flag){
                 produce();
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
 
         public void produce(){
             try {
-                synchronized (Consumer_Producer.this){
-                    while(queue.size() == maxSize){
-                        Consumer_Producer.this.wait();
-                    }
-                    queue.offer(t);
-//                    System.out.println("size:  " + queue.size());
-                    System.out.println("num:   " + t.toString());
-                    Consumer_Producer.this.notify();
+                lock.lock();
+                while(queue.size() == maxSize){
+                    not_full.await();
                 }
+                queue.offer(t);
+                System.out.println(Thread.currentThread().getName() + "  produce:  " + t.toString());
+                not_empty.signal();
             } catch (InterruptedException e) {
                 flag = false;
+            } finally {
+                lock.unlock();
             }
         }
     }
