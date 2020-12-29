@@ -1163,5 +1163,126 @@ public class Jz2 {
         }
     }
 
+    public static void main(String[] args) {
+        MedianFinder medianFinder = new MedianFinder();
+        medianFinder.addNum(1);
+        medianFinder.addNum(2);
+        medianFinder.addNum(3);
+        medianFinder.addNum(4);
+        medianFinder.addNum(5);
+        medianFinder.addNum(6);
+        medianFinder.addNum(7);
+        medianFinder.addNum(8);
+        medianFinder.addNum(9);
+        medianFinder.addNum(10);
+        System.out.println(medianFinder.findMedian());
+    }
+
+    //41
+    static class MedianFinder {
+
+        private int left;
+        private int mid;
+        private int mid2;
+        private int right;
+        private boolean isOdd;
+        private int count;
+
+        /** initialize your data structure here. */
+        public MedianFinder() {
+            isOdd = false;
+            count = 0;
+        }
+
+        public void addNum(int num) {
+            if(count == 0){
+                mid = num;
+            }
+            else if(count == 1){
+                if(num < mid){
+                    mid2 = mid;
+                    mid = num;
+                }
+                else{
+                    mid2 = num;
+                }
+            }
+            else if(count == 2){
+                if(num < mid){
+                    left = num;
+                    right = mid2;
+                }
+                else if(num < mid2){
+                    left = mid;
+                    mid = num;
+                    right = mid2;
+                }
+                else{
+                    left = mid;
+                    mid = mid2;
+                    right = num;
+                }
+            }
+            else if(isOdd){
+                if(num < left){
+                    mid2 = mid;
+                    mid = left;
+                    left = num;
+                }
+                else if(num < mid){
+                    mid2 = mid;
+                    mid = num;
+                }
+                else if(num < right){
+                    mid2 = num;
+                }
+                else{
+                    mid2 = right;
+                    right = num;
+                }
+            }
+            else{
+                if(num < left){
+                    right = mid2;
+                }
+                else if(num < mid){
+                    right = mid2;
+                    left = num;
+                }
+                else if(num < mid2){
+                    left = mid;
+                    mid = num;
+                    right = mid2;
+                }
+                else if(num < right){
+                    left = mid;
+                    mid = mid2;
+                    right = num;
+                }
+                else{
+                    left = mid;
+                    mid = mid2;
+                }
+            }
+
+            isOdd = !isOdd;
+            if(count < 3){
+                count++;
+            }
+        }
+
+        public double findMedian() {
+            if(count == 0){
+                return 0;
+            }
+            if(isOdd){
+                return mid;
+            }
+            else{
+                return ((double) (mid + mid2)) / 2;
+            }
+        }
+    }
+
 
 }
